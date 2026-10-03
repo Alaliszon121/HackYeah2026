@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: Pianka do golenia
   isPink: 0
   priceGrosze: 1249
-  modelPrefab: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: 36cd542fa93ecd0488e71c7085953633, type: 3}
   icon: {fileID: 0}
   comparisonGroup: A

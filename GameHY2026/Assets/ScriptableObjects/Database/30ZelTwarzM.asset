@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: "M\u0119ski \u017Cel do twarzy"
   isPink: 0
   priceGrosze: 1149
-  modelPrefab: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: c8eb42af57680e4419c70348d23cb178, type: 3}
   icon: {fileID: 0}
   comparisonGroup: A

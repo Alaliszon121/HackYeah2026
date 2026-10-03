@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: "Damski \u017Cel pod prysznic"
   isPink: 1
   priceGrosze: 1199
-  modelPrefab: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: 314bfccd97b4fb040840861b5f2af44c, type: 3}
   icon: {fileID: 0}
   comparisonGroup: A

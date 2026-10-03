@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: "Krem do twarzy dla m\u0119\u017Cczyzn"
   isPink: 0
   priceGrosze: 1732
-  modelPrefab: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: 93f0e9fe5a3400f47a70e2eca4e10786, type: 3}
   icon: {fileID: 0}
   comparisonGroup: A

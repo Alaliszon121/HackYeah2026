@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: Dezodorant dla kobiet
   isPink: 1
   priceGrosze: 1848
-  modelPrefab: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: cb9e1c118b1762d4da4cbeec83aef72e, type: 3}
   icon: {fileID: 0}
   comparisonGroup: A

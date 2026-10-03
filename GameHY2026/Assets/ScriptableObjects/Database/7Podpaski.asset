@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: Podpaski 20 sztuk
   isPink: 1
   priceGrosze: 6980
-  modelPrefab: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: ca5f9f543b925374b9d21b75173484bd, type: 3}
   icon: {fileID: 0}
   comparisonGroup: A

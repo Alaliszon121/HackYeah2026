@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: Perfumy damskie marki premium
   isPink: 1
   priceGrosze: 65500
-  modelPrefab: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: d3b9e18edd77057489cdd0f550e76231, type: 3}
   icon: {fileID: 0}
   comparisonGroup: A
