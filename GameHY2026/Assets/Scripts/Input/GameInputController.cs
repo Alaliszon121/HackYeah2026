@@ -13,6 +13,7 @@ namespace PinkTaxGame
         [SerializeField] private InputActionReference primaryPressAction;
         [SerializeField] private InputActionReference submitAction;
         [SerializeField] private InputActionReference cancelAction;
+        [SerializeField] private InputActionReference dragPressAction;
 
         public Vector2 PointerPosition => default;
         public bool PrimaryPressIsHeld => default;
