@@ -4,9 +4,27 @@ using System.Collections.Generic;
 namespace PinkTaxGame
 {
     [Serializable]
-    public class SublevelData
+    public sealed class SublevelData
     {
-        public ModeType modeType;
-        public List<ProductData> products = new List<ProductData>();
+        private ModeType modeType;
+
+        private List<ProductData> products =
+            new List<ProductData>();
+
+        public ModeType ModeType => modeType;
+
+        public IReadOnlyList<ProductData> Products =>
+            products;
+
+        public SublevelData(
+            ModeType modeType,
+            IEnumerable<ProductData> products
+        )
+        {
+            this.modeType = modeType;
+
+            if (products != null)
+                this.products = new List<ProductData>(products);
+        }
     }
 }

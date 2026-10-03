@@ -3,9 +3,15 @@ using UnityEngine;
 
 namespace PinkTaxGame
 {
-    [CreateAssetMenu(fileName = "ProductDatabase", menuName = "Pink Tax Game/Product Database")]
-    public class ProductDatabase : ScriptableObject
+    [CreateAssetMenu(
+        fileName = "ProductDatabase",
+        menuName = "Pink Tax Game/Product Database"
+    )]
+    public sealed class ProductDatabase : ScriptableObject
     {
-        public List<ProductData> products = new List<ProductData>();
+        [SerializeField]
+        private List<ProductData> products = new List<ProductData>();
+
+        public IReadOnlyList<ProductData> Products => products;
     }
 }
