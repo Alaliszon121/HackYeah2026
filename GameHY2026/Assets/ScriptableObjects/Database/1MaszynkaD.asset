@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: Damska maszynka do golenia
   isPink: 1
   priceGrosze: 464
-  modelPrefab: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: fd8169b0147655f499d6dc9d64c14a0f, type: 3}
   icon: {fileID: 0}
   comparisonGroup: A

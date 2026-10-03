@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: "Dezodorant dla m\u0119\u017Cczyzn"
   isPink: 0
   priceGrosze: 1748
-  modelPrefab: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: a45ddf4bf0266f84ab67e287b3db7319, type: 3}
   icon: {fileID: 0}
   comparisonGroup: A

@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: Krem do twarzy dla kobiet
   isPink: 1
   priceGrosze: 1949
-  modelPrefab: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: e5718a0385030954298c2ccc25df10ac, type: 3}
   icon: {fileID: 0}
   comparisonGroup: A

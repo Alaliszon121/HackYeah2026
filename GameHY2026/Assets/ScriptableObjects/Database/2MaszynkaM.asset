@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: "M\u0119ska maszynka do golenia"
   isPink: 0
   priceGrosze: 428
-  modelPrefab: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: 69b2a52d550efda48b4007775c3a38d7, type: 3}
   icon: {fileID: 0}
   comparisonGroup: A
