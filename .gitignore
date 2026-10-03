@@ -75,3 +75,6 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 /GameHY2026/Library
 /GameHY2026/UserSettings
+/GameHY2026/obj/Debug
+/GameHY2026/Temp
+/GameHY2026/.idea
