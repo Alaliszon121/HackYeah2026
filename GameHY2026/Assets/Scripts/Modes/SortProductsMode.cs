@@ -1,60 +1,377 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 namespace PinkTaxGame
 {
     public class SortProductsMode : GameMode
     {
+        [Header("UI")]
+        [SerializeField] private GameObject uiRoot;
+        [SerializeField] private Button submitButton;
+
         [Header("Input Actions")]
-        [Tooltip("Assign 'Gameplay/Point' from PinkTaxGame Input Actions.")]
+        [Tooltip("Assign the pointer-position action, for example Gameplay/Point.")]
         [SerializeField] private InputActionReference pointAction;
-        [Tooltip("Assign 'Gameplay/DragPress' from PinkTaxGame Input Actions.")]
+
+        [Tooltip("Assign the press action, for example Gameplay/DragPress.")]
         [SerializeField] private InputActionReference dragPressAction;
 
-        [Header("Camera & Mechanics")]
+        [Header("Camera & Drag")]
         [SerializeField] private Camera puzzleCamera;
+
+        [Min(0f)]
         [SerializeField] private float maxDropDistance = 1.5f;
 
-        [Header("Products & Layout")]
-        [SerializeField] private List<ProductData> displayedProducts = new List<ProductData>();
-        [SerializeField] private List<Transform> slots = new List<Transform>();
-        [SerializeField] private SlotGenerator slotGenerator;
-        
-        
-        private Dictionary<Transform, ProductInteractable> slotOccupants = new Dictionary<Transform, ProductInteractable>();
-        private List<ProductInteractable> spawnedInteractables = new List<ProductInteractable>();
-        private List<ProductData> playerOrder = new List<ProductData>();
+        private readonly List<Pose> positions = new List<Pose>();
+        private readonly List<GameObject> productObjects = new List<GameObject>();
+        private readonly List<ProductInteractable> productInteractables = new List<ProductInteractable>();
+
+        private readonly Dictionary<int, ProductInteractable> positionOccupants =
+            new Dictionary<int, ProductInteractable>();
+
+        private readonly List<ProductData> playerOrder = new List<ProductData>();
+        private readonly List<ProductData> correctOrder = new List<ProductData>();
+
+        private ShelfController shelfController;
+        private int currentShelfIndex = -1;
 
         private ProductInteractable draggedItem;
+        private bool inputEnabled;
+
+        public IReadOnlyList<ProductData> PlayerOrder => playerOrder;
+        public IReadOnlyList<ProductData> CorrectOrder => correctOrder;
 
         private void Awake()
         {
             if (puzzleCamera == null)
-            {
                 puzzleCamera = Camera.main;
-            }
+
+            if (submitButton != null)
+                submitButton.onClick.AddListener(Submit);
+
+            if (uiRoot != null)
+                uiRoot.SetActive(false);
         }
 
-        private void OnEnable()
+        private void OnDestroy()
         {
-            if (dragPressAction != null)
-            {
-                dragPressAction.action.Enable();
-                dragPressAction.action.performed += OnDragPressPerformed;
-                dragPressAction.action.canceled += OnDragPressCanceled;
-            }
+            DisableInput();
 
-            if (pointAction != null)
-            {
-                pointAction.action.Enable();
-            }
+            if (submitButton != null)
+                submitButton.onClick.RemoveListener(Submit);
         }
 
         private void OnDisable()
         {
+            DisableInput();
+        }
+
+        private void Update()
+        {
+            if (inputEnabled)
+                HandleDrag();
+        }
+
+        public override void Setup(SublevelData sublevel)
+        {
+            Stop();
+            ResetState();
+            base.Setup(sublevel);
+
+            if (sublevel == null)
+            {
+                Debug.LogError("SortProductsMode: SublevelData is null.");
+                return;
+            }
+
+            if (sublevel.ModeType != ModeType.SortProducts)
+            {
+                Debug.LogError("SortProductsMode: Received a sublevel for the wrong mode.");
+                return;
+            }
+
+            if (sublevel.Products.Count < 2)
+            {
+                Debug.LogError("SortProductsMode: SortProducts requires at least two products.");
+                return;
+            }
+
+            foreach (ProductData product in sublevel.Products)
+            {
+                if (product == null)
+                {
+                    Debug.LogError("SortProductsMode: Sublevel contains a null product.");
+                    return;
+                }
+
+                correctOrder.Add(product);
+            }
+
+            correctOrder.Sort(
+                (first, second) => first.PriceGrosze.CompareTo(second.PriceGrosze)
+            );
+        }
+
+        public void SetShelfContext(ShelfController controller, int shelfIndex)
+        {
+            shelfController = controller;
+            currentShelfIndex = shelfIndex;
+        }
+
+        public void SetProductObjects(IReadOnlyList<GameObject> objects)
+        {
+            productObjects.Clear();
+
+            if (objects == null)
+                return;
+
+            foreach (GameObject productObject in objects)
+                productObjects.Add(productObject);
+        }
+
+        public override void Play()
+        {
+            if (!CanStart())
+                return;
+
+            positions.Clear();
+
+            positions.AddRange(
+                shelfController.GetProductPoses(
+                    currentShelfIndex,
+                    currentSublevel.Products.Count
+                )
+            );
+
+            if (positions.Count != currentSublevel.Products.Count)
+            {
+                Debug.LogError(
+                    $"SortProductsMode: Expected {currentSublevel.Products.Count} product positions, " +
+                    $"but ShelfController returned {positions.Count}."
+                );
+                return;
+            }
+
+            if (!InitializeBoard())
+                return;
+
+            uiRoot.SetActive(true);
+            EnableInput();
+        }
+
+        public override void Submit()
+        {
+            if (currentSublevel == null || currentSublevel.ModeType != ModeType.SortProducts)
+            {
+                Debug.LogError(
+                    "SortProductsMode: Cannot submit without a valid SortProducts sublevel."
+                );
+                return;
+            }
+
+            if (draggedItem != null)
+                EndDragging();
+
+            UpdatePlayerOrder();
+
+            if (playerOrder.Count != currentSublevel.Products.Count)
+            {
+                Debug.LogWarning(
+                    "SortProductsMode: Not every product occupies a sorting position."
+                );
+                return;
+            }
+
+            if (gameManager == null)
+            {
+                Debug.LogError("SortProductsMode: GameManager is not initialized.");
+                return;
+            }
+
+            int points = CalculatePoints();
+
+            ModeResult result = ModeResult.CreateSortResult(
+                currentSublevel.Products,
+                playerOrder,
+                correctOrder,
+                points,
+                MaxPoints
+            );
+
+            gameManager.CompleteCurrentSublevel(result);
+        }
+
+        public override void Stop()
+        {
+            DisableInput();
+            draggedItem = null;
+
+            if (uiRoot != null)
+                uiRoot.SetActive(false);
+        }
+
+        public bool VerifySortingOrder()
+        {
+            UpdatePlayerOrder();
+
+            if (playerOrder.Count != currentSublevel?.Products.Count)
+                return false;
+
+            for (int i = 1; i < playerOrder.Count; i++)
+            {
+                if (playerOrder[i - 1].PriceGrosze > playerOrder[i].PriceGrosze)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool CanStart()
+        {
+            if (currentSublevel == null || currentSublevel.ModeType != ModeType.SortProducts)
+            {
+                Debug.LogError(
+                    "SortProductsMode: Cannot play without a valid SortProducts sublevel."
+                );
+                return false;
+            }
+
+            if (uiRoot == null)
+            {
+                Debug.LogError("SortProductsMode: UI Root is not assigned.");
+                return false;
+            }
+
+            if (submitButton == null)
+            {
+                Debug.LogError("SortProductsMode: Submit Button is not assigned.");
+                return false;
+            }
+
+            if (pointAction == null || dragPressAction == null)
+            {
+                Debug.LogError(
+                    "SortProductsMode: Point and DragPress input actions must be assigned."
+                );
+                return false;
+            }
+
+            if (puzzleCamera == null)
+                puzzleCamera = Camera.main;
+
+            if (puzzleCamera == null)
+            {
+                Debug.LogError(
+                    "SortProductsMode: No puzzle camera is assigned and no Main Camera was found."
+                );
+                return false;
+            }
+
+            if (shelfController == null)
+            {
+                Debug.LogError(
+                    "SortProductsMode: ShelfController context was not provided."
+                );
+                return false;
+            }
+
+            if (currentShelfIndex < 0)
+            {
+                Debug.LogError(
+                    "SortProductsMode: Current shelf index was not provided."
+                );
+                return false;
+            }
+
+            if (productObjects.Count != currentSublevel.Products.Count)
+            {
+                Debug.LogError(
+                    $"SortProductsMode: Expected {currentSublevel.Products.Count} spawned product objects, " +
+                    $"but received {productObjects.Count}."
+                );
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool InitializeBoard()
+        {
+            positionOccupants.Clear();
+            productInteractables.Clear();
+            playerOrder.Clear();
+            draggedItem = null;
+
+            List<int> randomizedPositionIndices = new List<int>();
+
+            for (int i = 0; i < positions.Count; i++)
+                randomizedPositionIndices.Add(i);
+
+            ShuffleList(randomizedPositionIndices);
+
+            for (int i = 0; i < currentSublevel.Products.Count; i++)
+            {
+                ProductData product = currentSublevel.Products[i];
+                GameObject productObject = productObjects[i];
+                int targetPositionIndex = randomizedPositionIndices[i];
+
+                if (productObject == null)
+                {
+                    Debug.LogError(
+                        $"SortProductsMode: Spawned product object {i} is null."
+                    );
+                    return false;
+                }
+
+                ProductInteractable interactable =
+                    productObject.GetComponent<ProductInteractable>();
+
+                if (interactable == null)
+                    interactable = productObject.AddComponent<ProductInteractable>();
+
+                if (!interactable.Setup(product))
+                {
+                    Debug.LogError(
+                        $"SortProductsMode: Product '{product.ProductName}' " +
+                        "could not be made interactable."
+                    );
+                    return false;
+                }
+
+                interactable.CurrentPositionIndex = targetPositionIndex;
+
+                MoveProductToPosition(interactable, targetPositionIndex);
+
+                positionOccupants[targetPositionIndex] = interactable;
+                productInteractables.Add(interactable);
+            }
+
+            UpdatePlayerOrder();
+            return true;
+        }
+
+        private void EnableInput()
+        {
+            if (inputEnabled)
+                return;
+
+            dragPressAction.action.performed += OnDragPressPerformed;
+            dragPressAction.action.canceled += OnDragPressCanceled;
+
+            pointAction.action.Enable();
+            dragPressAction.action.Enable();
+
+            inputEnabled = true;
+        }
+
+        private void DisableInput()
+        {
+            if (!inputEnabled)
+                return;
+
             if (dragPressAction != null)
             {
                 dragPressAction.action.performed -= OnDragPressPerformed;
@@ -63,232 +380,384 @@ namespace PinkTaxGame
             }
 
             if (pointAction != null)
-            {
                 pointAction.action.Disable();
-            }
-        }
 
-        private void Update()
-        {
-            HandleDrag();
-        }
-
-        public void SetPlayerOrder(List<ProductData> orderedProducts)
-        {
-            playerOrder = new List<ProductData>(orderedProducts);
-        }
-
-        public override void Setup(SublevelData sublevel)
-        {
-            InitializeBoard();
-        }
-
-        private void Start() {
-            InitializeBoard();
-        }
-
-        public override void Play() { }
-
-        public override void Submit()
-        { }
-
-        public void InitializeBoard()
-        {
-            ClearBoard();
-
-            if (displayedProducts == null || displayedProducts.Count == 0) return;
-
-            if (slotGenerator != null)
-            {
-                slots = slotGenerator.GenerateSlots(displayedProducts.Count);
-            }
-
-            if (slots == null || slots.Count == 0)
-            {
-                Debug.LogWarning("SortProductsMode: No slots available!");
-                return;
-            }
-
-            List<Transform> randomizedSlots = new List<Transform>(slots);
-            ShuffleList(randomizedSlots);
-
-            for (int i = 0; i < Mathf.Min(displayedProducts.Count, randomizedSlots.Count); i++)
-            {
-                ProductData data = displayedProducts[i];
-                Transform targetSlot = randomizedSlots[i];
-
-                GameObject itemObj = data.ModelPrefab != null 
-                    ? Instantiate(data.ModelPrefab, targetSlot.position, targetSlot.rotation)
-                    : new GameObject($"Product_{data.ProductName}");
-
-                ProductInteractable interactable = itemObj.GetComponent<ProductInteractable>();
-                if (interactable == null)
-                {
-                    interactable = itemObj.AddComponent<ProductInteractable>();
-                }
-
-                interactable.Setup(data);
-                interactable.CurrentSlot = targetSlot;
-
-                slotOccupants[targetSlot] = interactable;
-                spawnedInteractables.Add(interactable);
-            }
-
-            UpdatePlayerOrder();
+            inputEnabled = false;
         }
 
         private void OnDragPressPerformed(InputAction.CallbackContext context)
         {
-            if (puzzleCamera == null || pointAction == null) return;
+            if (puzzleCamera == null || pointAction == null)
+                return;
 
-            Vector2 pointerPos = pointAction.action.ReadValue<Vector2>();
-            Ray ray = puzzleCamera.ScreenPointToRay(pointerPos);
+            Vector2 pointerPosition =
+                pointAction.action.ReadValue<Vector2>();
 
-            if (Physics.Raycast(ray, out RaycastHit hit))
-            {
-                ProductInteractable item = hit.collider.GetComponentInParent<ProductInteractable>();
-                if (item != null && spawnedInteractables.Contains(item))
-                {
-                    StartDragging(item);
-                }
-            }
+            Ray ray =
+                puzzleCamera.ScreenPointToRay(pointerPosition);
+
+            ProductInteractable item =
+                FindClosestInteractable(ray);
+
+            if (item != null)
+                StartDragging(item);
         }
 
         private void OnDragPressCanceled(InputAction.CallbackContext context)
         {
             if (draggedItem != null)
-            {
                 EndDragging();
+        }
+
+        private ProductInteractable FindClosestInteractable(Ray ray)
+        {
+            RaycastHit[] hits = Physics.RaycastAll(ray);
+
+            ProductInteractable closestItem = null;
+            float closestDistance = float.MaxValue;
+
+            foreach (RaycastHit hit in hits)
+            {
+                ProductInteractable item =
+                    hit.collider.GetComponentInParent<ProductInteractable>();
+
+                if (item == null || !productInteractables.Contains(item))
+                    continue;
+
+                if (hit.distance >= closestDistance)
+                    continue;
+
+                closestDistance = hit.distance;
+                closestItem = item;
             }
+
+            return closestItem;
         }
 
         private void StartDragging(ProductInteractable item)
         {
-            draggedItem = item;
-            draggedItem.OriginalSlot = item.CurrentSlot;
-            draggedItem.OriginalPosition = item.transform.position;
+            if (item == null || item.CurrentPositionIndex < 0)
+                return;
 
-            if (draggedItem.OriginalSlot != null && slotOccupants.ContainsKey(draggedItem.OriginalSlot))
+            draggedItem = item;
+
+            draggedItem.OriginalPositionIndex =
+                item.CurrentPositionIndex;
+
+            draggedItem.OriginalPosition =
+                item.transform.position;
+
+            draggedItem.OriginalRotation =
+                item.transform.rotation;
+
+            if (
+                positionOccupants.TryGetValue(
+                    draggedItem.OriginalPositionIndex,
+                    out ProductInteractable occupant
+                ) &&
+                occupant == draggedItem
+            )
             {
-                if (slotOccupants[draggedItem.OriginalSlot] == draggedItem)
-                {
-                    slotOccupants.Remove(draggedItem.OriginalSlot);
-                }
+                positionOccupants.Remove(
+                    draggedItem.OriginalPositionIndex
+                );
             }
         }
 
         private void HandleDrag()
         {
-            if (draggedItem == null || pointAction == null || puzzleCamera == null) return;
-
-            Vector2 pointerPos = pointAction.action.ReadValue<Vector2>();
-            Ray ray = puzzleCamera.ScreenPointToRay(pointerPos);
-
-            Plane dragPlane = new Plane(-puzzleCamera.transform.forward, draggedItem.OriginalPosition);
-
-            if (dragPlane.Raycast(ray, out float enter))
+            if (
+                draggedItem == null ||
+                pointAction == null ||
+                puzzleCamera == null
+            )
             {
-                Vector3 hitPoint = ray.GetPoint(enter);
-                draggedItem.transform.position = new Vector3(hitPoint.x, hitPoint.y, draggedItem.OriginalPosition.z);
+                return;
             }
+
+            Vector2 pointerPosition =
+                pointAction.action.ReadValue<Vector2>();
+
+            Ray ray =
+                puzzleCamera.ScreenPointToRay(pointerPosition);
+
+            Plane dragPlane = new Plane(
+                -puzzleCamera.transform.forward,
+                draggedItem.OriginalPosition
+            );
+
+            if (!dragPlane.Raycast(ray, out float enter))
+                return;
+
+            draggedItem.transform.position =
+                ray.GetPoint(enter);
         }
 
         private void EndDragging()
         {
-            Transform targetSlot = GetClosestSlot(draggedItem.transform.position);
+            if (draggedItem == null)
+                return;
 
-            if (targetSlot != null && Vector3.Distance(draggedItem.transform.position, targetSlot.position) <= maxDropDistance)
+            int targetPositionIndex =
+                GetClosestPositionIndex(
+                    draggedItem.transform.position
+                );
+
+            bool validDrop =
+                targetPositionIndex >= 0 &&
+                Vector3.Distance(
+                    draggedItem.transform.position,
+                    positions[targetPositionIndex].position
+                ) <= maxDropDistance;
+
+            if (!validDrop)
             {
-                // If target slot is occupied, move occupant to the dragged item's original slot
-                if (slotOccupants.TryGetValue(targetSlot, out ProductInteractable occupant) && occupant != null)
-                {
-                    occupant.CurrentSlot = draggedItem.OriginalSlot;
-                    occupant.transform.position = draggedItem.OriginalSlot.position;
+                ReturnDraggedItemToOriginalPosition();
 
-                    if (draggedItem.OriginalSlot != null)
-                    {
-                        slotOccupants[draggedItem.OriginalSlot] = occupant;
-                    }
-                }
-
-                // Snap dragged item into target slot
-                draggedItem.CurrentSlot = targetSlot;
-                draggedItem.transform.position = targetSlot.position;
-                slotOccupants[targetSlot] = draggedItem;
+                draggedItem = null;
+                UpdatePlayerOrder();
+                return;
             }
-            else
+
+            if (
+                positionOccupants.TryGetValue(
+                    targetPositionIndex,
+                    out ProductInteractable occupant
+                ) &&
+                occupant != null &&
+                occupant != draggedItem
+            )
             {
-                // Snap back to original slot
-                draggedItem.CurrentSlot = draggedItem.OriginalSlot;
-                draggedItem.transform.position = draggedItem.OriginalPosition;
+                int originalPositionIndex =
+                    draggedItem.OriginalPositionIndex;
 
-                if (draggedItem.OriginalSlot != null)
-                {
-                    slotOccupants[draggedItem.OriginalSlot] = draggedItem;
-                }
+                occupant.CurrentPositionIndex =
+                    originalPositionIndex;
+
+                MoveProductToPosition(
+                    occupant,
+                    originalPositionIndex
+                );
+
+                positionOccupants[originalPositionIndex] =
+                    occupant;
             }
+
+            draggedItem.CurrentPositionIndex =
+                targetPositionIndex;
+
+            MoveProductToPosition(
+                draggedItem,
+                targetPositionIndex
+            );
+
+            positionOccupants[targetPositionIndex] =
+                draggedItem;
 
             draggedItem = null;
+
             UpdatePlayerOrder();
         }
 
-        public bool VerifySortingOrder()
+        private void ReturnDraggedItemToOriginalPosition()
         {
-            if (playerOrder == null || playerOrder.Count <= 1) return true;
-            
+            int originalPositionIndex =
+                draggedItem.OriginalPositionIndex;
 
-            return true;
+            if (
+                originalPositionIndex >= 0 &&
+                originalPositionIndex < positions.Count
+            )
+            {
+                draggedItem.CurrentPositionIndex =
+                    originalPositionIndex;
+
+                MoveProductToPosition(
+                    draggedItem,
+                    originalPositionIndex
+                );
+
+                positionOccupants[originalPositionIndex] =
+                    draggedItem;
+
+                return;
+            }
+
+            draggedItem.transform.SetPositionAndRotation(
+                draggedItem.OriginalPosition,
+                draggedItem.OriginalRotation
+            );
+        }
+
+        private void MoveProductToPosition(
+            ProductInteractable item,
+            int positionIndex
+        )
+        {
+            Pose pose = positions[positionIndex];
+
+            item.transform.SetPositionAndRotation(
+                pose.position,
+                pose.rotation
+            );
         }
 
         private void UpdatePlayerOrder()
         {
             playerOrder.Clear();
-            foreach (Transform slot in slots)
+
+            for (
+                int positionIndex = 0;
+                positionIndex < positions.Count;
+                positionIndex++
+            )
             {
-                if (slotOccupants.TryGetValue(slot, out ProductInteractable item) && item != null && item.ProductData != null)
+                if (
+                    positionOccupants.TryGetValue(
+                        positionIndex,
+                        out ProductInteractable item
+                    ) &&
+                    item != null &&
+                    item.ProductData != null
+                )
                 {
                     playerOrder.Add(item.ProductData);
                 }
             }
         }
 
-        private Transform GetClosestSlot(Vector3 position)
+        private int CalculatePoints()
         {
-            Transform closest = null;
-            float minDistance = float.MaxValue;
+            int productCount = playerOrder.Count;
 
-            foreach (Transform slot in slots)
+            if (productCount <= 1)
+                return MaxPoints;
+
+            int totalDistance = 0;
+
+            Dictionary<int, List<int>> correctPositionsByPrice =
+                new Dictionary<int, List<int>>();
+
+            Dictionary<int, List<int>> playerPositionsByPrice =
+                new Dictionary<int, List<int>>();
+
+            for (int i = 0; i < correctOrder.Count; i++)
             {
-                float dist = Vector3.Distance(position, slot.position);
-                if (dist < minDistance)
+                int price = correctOrder[i].PriceGrosze;
+
+                if (!correctPositionsByPrice.ContainsKey(price))
+                    correctPositionsByPrice[price] = new List<int>();
+
+                correctPositionsByPrice[price].Add(i);
+            }
+
+            for (int i = 0; i < playerOrder.Count; i++)
+            {
+                int price = playerOrder[i].PriceGrosze;
+
+                if (!playerPositionsByPrice.ContainsKey(price))
+                    playerPositionsByPrice[price] = new List<int>();
+
+                playerPositionsByPrice[price].Add(i);
+            }
+
+            foreach (
+                KeyValuePair<int, List<int>> pair
+                in correctPositionsByPrice
+            )
+            {
+                List<int> correctPositions = pair.Value;
+
+                if (!playerPositionsByPrice.TryGetValue(
+                    pair.Key,
+                    out List<int> playerPositions
+                ))
                 {
-                    minDistance = dist;
-                    closest = slot;
+                    continue;
+                }
+
+                correctPositions.Sort();
+                playerPositions.Sort();
+
+                int count = Mathf.Min(
+                    correctPositions.Count,
+                    playerPositions.Count
+                );
+
+                for (int i = 0; i < count; i++)
+                {
+                    totalDistance += Mathf.Abs(
+                        playerPositions[i] -
+                        correctPositions[i]
+                    );
                 }
             }
 
-            return closest;
+            int maxDistance =
+                productCount * productCount / 2;
+
+            if (maxDistance <= 0)
+                return MaxPoints;
+
+            float accuracy =
+                1f -
+                (float)totalDistance / maxDistance;
+
+            accuracy = Mathf.Clamp01(accuracy);
+
+            return Mathf.RoundToInt(
+                accuracy * MaxPoints
+            );
         }
 
-        private void ClearBoard()
+        private int GetClosestPositionIndex(
+            Vector3 position
+        )
         {
-            foreach (var item in spawnedInteractables)
+            int closestIndex = -1;
+            float minimumDistance = float.MaxValue;
+
+            for (int i = 0; i < positions.Count; i++)
             {
-                if (item != null) Destroy(item.gameObject);
+                float distance =
+                    Vector3.Distance(
+                        position,
+                        positions[i].position
+                    );
+
+                if (distance >= minimumDistance)
+                    continue;
+
+                minimumDistance = distance;
+                closestIndex = i;
             }
-            spawnedInteractables.Clear();
-            slotOccupants.Clear();
+
+            return closestIndex;
+        }
+
+        private void ResetState()
+        {
+            positions.Clear();
+            productObjects.Clear();
+            productInteractables.Clear();
+            positionOccupants.Clear();
             playerOrder.Clear();
+            correctOrder.Clear();
+
+            shelfController = null;
+            currentShelfIndex = -1;
+            draggedItem = null;
         }
 
         private void ShuffleList<T>(List<T> list)
         {
             for (int i = 0; i < list.Count; i++)
             {
-                T temp = list[i];
-                int randomIndex = Random.Range(i, list.Count);
-                list[i] = list[randomIndex];
-                list[randomIndex] = temp;
+                int randomIndex =
+                    Random.Range(i, list.Count);
+
+                (list[i], list[randomIndex]) =
+                    (list[randomIndex], list[i]);
             }
         }
     }

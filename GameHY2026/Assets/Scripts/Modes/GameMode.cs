@@ -21,5 +21,9 @@ namespace PinkTaxGame
 
         public abstract void Play();
         public abstract void Submit();
+
+        public virtual void Stop()
+        {
+        }
     }
 }

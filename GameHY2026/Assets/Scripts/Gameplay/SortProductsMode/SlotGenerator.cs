@@ -1,67 +1,97 @@
-using UnityEngine;
-
 using System.Collections.Generic;
 using UnityEngine;
 
 public class SlotGenerator : MonoBehaviour
 {
-    [Header("Border Boundaries")]
-    [Tooltip("Left edge boundary (outer limit, excluded from slot spawning).")]
-    [SerializeField] private Transform leftBorder;
-
-    [Tooltip("Right edge boundary (outer limit, excluded from slot spawning).")]
-    [SerializeField] private Transform rightBorder;
-
     [Header("Gizmos")]
     [SerializeField] private bool showGizmos = true;
-    [SerializeField] private Color borderGizmoColor = Color.yellow;
+    [SerializeField] private Color areaGizmoColor = Color.yellow;
 
-    /// <summary>
-    /// Calculates dynamic spacing between leftBorder and rightBorder and generates 
-    /// slot positions evenly between them, excluding the borders themselves.
-    /// </summary>
-    public List<Transform> GenerateSlots(int requiredSlots)
+    private readonly List<GameObject> generatedSlotObjects = new List<GameObject>();
+
+    private Transform currentShelf;
+    private float currentShelfWidth;
+    private Vector3 currentRowLocalOffset;
+
+    public List<Transform> GenerateSlots(
+        int requiredSlots,
+        Transform shelfTransform,
+        float shelfWidth,
+        Vector3 rowLocalOffset
+    )
     {
+        ClearGeneratedSlots();
+
         List<Transform> generatedSlots = new List<Transform>();
 
-        if (requiredSlots <= 0) return generatedSlots;
+        if (requiredSlots <= 0)
+            return generatedSlots;
 
-        if (leftBorder == null || rightBorder == null)
+        if (shelfTransform == null)
         {
-            Debug.LogError("LineSlotGenerator: Please assign both Left Border and Right Border in the Inspector!");
+            Debug.LogError("SlotGenerator: Shelf transform is null.");
             return generatedSlots;
         }
 
-        Vector3 startPos = leftBorder.position;
-        Vector3 endPos = rightBorder.position;
+        if (shelfWidth <= 0f)
+        {
+            Debug.LogError("SlotGenerator: Shelf width must be greater than zero.");
+            return generatedSlots;
+        }
 
-        // Dividing the space into (requiredSlots + 1) segments creates 
-        // requiredSlots inner points between startPos and endPos.
-        int totalSegments = requiredSlots + 1;
-        Vector3 stepVector = (endPos - startPos) / totalSegments;
+        currentShelf = shelfTransform;
+        currentShelfWidth = shelfWidth;
+        currentRowLocalOffset = rowLocalOffset;
 
-        // Loop through internal points only (excluding i = 0 [startPos] and i = totalSegments [endPos])
+        Vector3 rowCenter = shelfTransform.TransformPoint(rowLocalOffset);
+        Vector3 halfWidthOffset = shelfTransform.forward * (shelfWidth * 0.5f);
+
+        Vector3 startPosition = rowCenter + halfWidthOffset;
+        Vector3 endPosition = rowCenter - halfWidthOffset;
+        Vector3 step = (endPosition - startPosition) / (requiredSlots + 1);
+
         for (int i = 1; i <= requiredSlots; i++)
         {
-            Vector3 worldPos = startPos + (stepVector * i);
+            GameObject slotObject = new GameObject($"SortSlot_{i - 1}");
 
-            GameObject slotObj = new GameObject($"Slot_{i - 1}");
-            slotObj.transform.position = worldPos;
-            slotObj.transform.SetParent(transform);
+            slotObject.transform.SetParent(transform);
+            slotObject.transform.SetPositionAndRotation(
+                startPosition + step * i,
+                shelfTransform.rotation
+            );
 
-            generatedSlots.Add(slotObj.transform);
+            generatedSlotObjects.Add(slotObject);
+            generatedSlots.Add(slotObject.transform);
         }
 
         return generatedSlots;
     }
 
+    public void ClearGeneratedSlots()
+    {
+        foreach (GameObject slotObject in generatedSlotObjects)
+        {
+            if (slotObject != null)
+                Destroy(slotObject);
+        }
+
+        generatedSlotObjects.Clear();
+    }
+
     private void OnDrawGizmos()
     {
-        if (!showGizmos || leftBorder == null || rightBorder == null) return;
+        if (!showGizmos || currentShelf == null || currentShelfWidth <= 0f)
+            return;
 
-        Gizmos.color = borderGizmoColor;
-        Gizmos.DrawLine(leftBorder.position, rightBorder.position);
-        Gizmos.DrawWireSphere(leftBorder.position, 0.15f);
-        Gizmos.DrawWireSphere(rightBorder.position, 0.15f);
+        Vector3 rowCenter = currentShelf.TransformPoint(currentRowLocalOffset);
+        Vector3 halfWidthOffset = currentShelf.forward * (currentShelfWidth * 0.5f);
+
+        Vector3 startPosition = rowCenter + halfWidthOffset;
+        Vector3 endPosition = rowCenter - halfWidthOffset;
+
+        Gizmos.color = areaGizmoColor;
+        Gizmos.DrawLine(startPosition, endPosition);
+        Gizmos.DrawWireSphere(startPosition, 0.15f);
+        Gizmos.DrawWireSphere(endPosition, 0.15f);
     }
 }

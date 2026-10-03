@@ -9,6 +9,12 @@ namespace PinkTaxGame
 
         [SerializeField] private GameManager gameManager;
 
+        private void Awake()
+        {
+            if (gameManager == null)
+                gameManager = FindAnyObjectByType<GameManager>();
+        }
+
         [ContextMenu("Run Fake Progression Test")]
         public void RunFakeProgressionTest()
         {
@@ -19,8 +25,11 @@ namespace PinkTaxGame
             }
 
             if (gameManager == null)
+                gameManager = FindAnyObjectByType<GameManager>();
+
+            if (gameManager == null)
             {
-                Debug.LogError("GameManagerTester: GameManager is not assigned.");
+                Debug.LogError("GameManagerTester: No GameManager exists in the scene.");
                 return;
             }
 

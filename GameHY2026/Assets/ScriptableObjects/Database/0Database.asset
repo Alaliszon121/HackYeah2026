@@ -12,4 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ea9d1d8eaf7d374297834fed1661280, type: 3}
   m_Name: 0Database
   m_EditorClassIdentifier: Assembly-CSharp::PinkTaxGame.ProductDatabase
-  products: []
+  products:
+  - {fileID: 11400000, guid: 75847cf6c29aae64c8ad0bd980443f6b, type: 2}
+  - {fileID: 11400000, guid: 8813701a221f45b499d777021e395df6, type: 2}
+  - {fileID: 11400000, guid: bc46153087b6b7d4e974c3b72b370577, type: 2}
+  - {fileID: 11400000, guid: 3385384cb56fea14c8bdf3b6f5b7b1b7, type: 2}
+  - {fileID: 11400000, guid: ca3d91e6bf7df8b4391dafdb436b2f23, type: 2}
+  - {fileID: 11400000, guid: c7045a8f33d87d64a8b5c47453129565, type: 2}
+  - {fileID: 11400000, guid: 854493920e8267e49892fad077f315b5, type: 2}
+  - {fileID: 11400000, guid: 7c79d6233ffb509449095929ab1abcf5, type: 2}
+  - {fileID: 11400000, guid: 32a835e227d96b0459b4b0dd9910baa3, type: 2}
+  - {fileID: 11400000, guid: 204b9af515e68064ea420fd7a47422ef, type: 2}
+  - {fileID: 11400000, guid: fad39dad2214a1a479fc88b0e3d38736, type: 2}
+  - {fileID: 11400000, guid: 9bbe49866b3297746a0b574ea68a7220, type: 2}

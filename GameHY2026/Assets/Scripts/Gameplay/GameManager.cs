@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PinkTaxGame
@@ -7,9 +8,10 @@ namespace PinkTaxGame
     [RequireComponent(typeof(SortProductsMode))]
     public class GameManager : MonoBehaviour
     {
-        [Header("Core")]
+        [Header("Optional Scene Overrides")]
         [SerializeField] private RunGenerator runGenerator;
         [SerializeField] private ShelfController shelfController;
+        [SerializeField] private CameraController cameraController;
 
         private RunData currentRun;
         private GameMode currentMode;
@@ -25,8 +27,21 @@ namespace PinkTaxGame
 
         private void Awake()
         {
+            ResolveSceneReferences();
             GetModes();
             InitializeModes();
+        }
+
+        private void ResolveSceneReferences()
+        {
+            if (runGenerator == null)
+                runGenerator = FindAnyObjectByType<RunGenerator>();
+
+            if (shelfController == null)
+                shelfController = FindAnyObjectByType<ShelfController>();
+
+            if (cameraController == null)
+                cameraController = FindAnyObjectByType<CameraController>();
         }
 
         private void GetModes()
@@ -45,15 +60,28 @@ namespace PinkTaxGame
 
         public void StartGame()
         {
+            currentMode?.Stop();
+            currentMode = null;
+            currentRun = null;
+            acceptingResult = false;
+
+            ResolveSceneReferences();
+
             if (runGenerator == null)
             {
-                Debug.LogError("GameManager: RunGenerator is not assigned.");
+                Debug.LogError("GameManager: No RunGenerator exists in the scene.");
                 return;
             }
 
             if (shelfController == null)
             {
-                Debug.LogError("GameManager: ShelfController is not assigned.");
+                Debug.LogError("GameManager: No ShelfController exists in the scene.");
+                return;
+            }
+
+            if (cameraController == null)
+            {
+                Debug.LogError("GameManager: No CameraController exists in the scene.");
                 return;
             }
 
@@ -72,7 +100,16 @@ namespace PinkTaxGame
                 return;
             }
 
-            StartCurrentSublevel();
+            if (!shelfController.PopulateShelves(currentRun.Sublevels))
+            {
+                Debug.LogError("GameManager: ShelfController failed to populate shelves.");
+                shelfController.ClearShelves();
+                currentRun = null;
+                return;
+            }
+
+            cameraController.ResetToMainMenu();
+            cameraController.MoveToFirstShelf(StartCurrentSublevel);
         }
 
         private void StartCurrentSublevel()
@@ -96,9 +133,25 @@ namespace PinkTaxGame
                 return;
             }
 
-            acceptingResult = true;
-
             currentMode.Setup(sublevel);
+
+            if (currentMode is SortProductsMode sortMode)
+            {
+                int shelfIndex = currentRun.CurrentSublevelIndex;
+                IReadOnlyList<GameObject> currentProducts =
+                    shelfController.GetSpawnedProducts(shelfIndex);
+
+                if (currentProducts == null)
+                {
+                    Debug.LogError($"GameManager: Shelf {shelfIndex} has no spawned product list.");
+                    return;
+                }
+
+                sortMode.SetShelfContext(shelfController, shelfIndex);
+                sortMode.SetProductObjects(currentProducts);
+            }
+
+            acceptingResult = true;
             currentMode.Play();
         }
 
@@ -120,35 +173,38 @@ namespace PinkTaxGame
             }
 
             acceptingResult = false;
-
+            currentMode?.Stop();
             currentRun.AddResult(result);
 
             if (currentRun.HasNextSublevel())
             {
                 currentRun.MoveToNextSublevel();
-                StartCurrentSublevel();
+                cameraController.MoveToNextShelf(StartCurrentSublevel);
                 return;
             }
 
-            GoToReceipt();
+            cameraController.MoveToReceipt(GoToReceipt);
         }
 
         public void GoToReceipt()
         {
+            acceptingResult = false;
+            currentMode?.Stop();
             currentMode = null;
 
             Debug.Log(
-                $"GameManager: Run finished with {currentRun?.Results.Count ?? 0} results."
+                $"GameManager: Run finished with {currentRun?.Results.Count ?? 0} results. " +
+                $"Score: {currentRun?.TotalPoints ?? 0}/{currentRun?.MaximumPossiblePoints ?? 0}."
             );
 
-            // Step 7:
-            // Show receipt.
+            // Next step:
+            // ReceiptController.ShowReceipt(currentRun);
         }
 
         public void GoToEndCutscene()
         {
-            // Step 7:
-            // Start end cutscene.
+            // Later:
+            // Start end cutscene and reset back to the menu.
         }
 
         private GameMode GetMode(ModeType modeType)
