@@ -15,6 +15,6 @@ public class AudioManagerTester : MonoBehaviour
     }
 
     public void PlayButtonSound() {
-        AudioManager.Instance.PlayButtonSound();
+        AudioManager.Instance.PlayButtonClick();
     }
 }
