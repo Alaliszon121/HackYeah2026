@@ -1091,6 +1091,9 @@ MonoBehaviour:
   mainAudioMixer: {fileID: 24100000, guid: 2fe445a4ecac72e4183bcf1b6ceac8ab, type: 2}
   musicAudioSource: {fileID: 525603564}
   sfxAudioSource: {fileID: 525603563}
+  buttonClickSound: {fileID: 6418180475301049370, guid: 52110e65ee2437a408b9a65f0e9492e8, type: 2}
+  itemDragSound: {fileID: 8300000, guid: 63fd288c9af96c64f98c53de2b6c9f3e, type: 3}
+  itemDropSound: {fileID: 8300000, guid: d89427cf93104a54cb498146f405d8dd, type: 3}
 --- !u!1 &530871927
 GameObject:
   m_ObjectHideFlags: 0
