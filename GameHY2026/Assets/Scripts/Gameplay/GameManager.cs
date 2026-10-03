@@ -31,6 +31,7 @@ namespace PinkTaxGame
 
         public void StartGame() { }
         public void StartCurrentSublevel() { }
+        
         public void CompleteCurrentSublevel(ModeResult result) { }
         public void NextSublevel() { }
         public void GoToReceipt() { }

@@ -646,7 +646,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1436793454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -759,6 +759,60 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 3.35, y: 0, z: 0}
+--- !u!1 &1789871964
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1789871966}
+  - component: {fileID: 1789871965}
+  m_Layer: 0
+  m_Name: SortProductsMode
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1789871965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1789871964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f53a85a8e3d05345b6fa8642817ffb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PinkTaxGame.SortProductsMode
+  pointAction: {fileID: -4207949413403028077, guid: b2b242d2b004098468b2e31865d10acb, type: 3}
+  dragPressAction: {fileID: -679017678924592800, guid: b2b242d2b004098468b2e31865d10acb, type: 3}
+  puzzleCamera: {fileID: 0}
+  maxDropDistance: 1.5
+  displayedProducts:
+  - {fileID: 11400000, guid: c100a5c6734d59946adb2b77cc6e5cfb, type: 2}
+  - {fileID: 11400000, guid: 7a8a6c4592893384198dc052288bccbf, type: 2}
+  slots: []
+  slotGenerator: {fileID: 1883792331}
+--- !u!4 &1789871966
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1789871964}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.029230135, y: -0, z: -0, w: 0.99957275}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1883792332}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1809672884
 GameObject:
   m_ObjectHideFlags: 0
@@ -1209,14 +1263,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1883792330}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -4}
+  m_LocalRotation: {x: -0.029230135, y: 0, z: -0, w: 0.99957275}
+  m_LocalPosition: {x: 0, y: 0.76455003, z: -4.0516}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 752329574}
   - {fileID: 2086186498}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1789871966}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2013410473
 GameObject:
@@ -1302,6 +1356,7 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1789871966}
   - {fileID: 1823688467}
   - {fileID: 157207114}
   - {fileID: 432432461}
@@ -1311,4 +1366,3 @@ SceneRoots:
   - {fileID: 891954023}
   - {fileID: 1275774783}
   - {fileID: 1436793455}
-  - {fileID: 1883792332}
