@@ -1,9 +1,12 @@
+using TMPro;
 using UnityEngine;
 
 namespace PinkTaxGame
 {
     public class PriceDifferenceMode : GameMode
     {
+        [SerializeField] private TMP_InputField playerInputZloty;
+        [SerializeField] private TMP_InputField playerInputGrosze;
         private ProductData firstProduct;
         private ProductData secondProduct;
 
@@ -96,6 +99,11 @@ namespace PinkTaxGame
             hasPlayerGuess = true;
         }
 
+        public void ExtractPlayerGuess() {
+            playerGuessGrosze = int.Parse(playerInputZloty.text) * 100 + int.Parse(playerInputGrosze.text);
+            hasPlayerGuess = true;
+        }
+
         public override void Submit()
         {
             if (firstProduct == null || secondProduct == null)
@@ -103,6 +111,8 @@ namespace PinkTaxGame
                 Debug.LogError("PriceDifferenceMode: Cannot submit without valid products.");
                 return;
             }
+            
+            
 
             if (!hasPlayerGuess)
             {
