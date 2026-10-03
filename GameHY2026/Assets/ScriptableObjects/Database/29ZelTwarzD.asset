@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21a6cffa5aca56542a92d83e6f8cd2c8, type: 3}
+  m_Name: 29ZelTwarzD
+  m_EditorClassIdentifier: Assembly-CSharp::PinkTaxGame.ProductData
+  productName: "Damski \u017Cel do twarzy"
+  isPink: 1
+  priceGrosze: 1159
+  modelPrefab: {fileID: 0}
+  icon: {fileID: 0}
+  comparisonGroup: A
