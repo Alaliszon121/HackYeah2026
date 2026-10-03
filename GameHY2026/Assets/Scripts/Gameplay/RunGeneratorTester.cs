@@ -4,31 +4,30 @@ namespace PinkTaxGame
 {
     public class RunGeneratorTester : MonoBehaviour
     {
-        [SerializeField]
-        private RunGenerator runGenerator;
+        [SerializeField] private RunGenerator runGenerator;
 
         [ContextMenu("Generate Test Run")]
-        private void GenerateTestRun()
+        public void GenerateTestRun()
         {
-            RunData run =
-                runGenerator.GenerateRun();
+            if (runGenerator == null)
+            {
+                Debug.LogError("RunGeneratorTester: RunGenerator is not assigned.");
+                return;
+            }
+
+            RunData run = runGenerator.GenerateRun();
 
             if (run == null)
                 return;
 
             Debug.Log(
-                $"Generated run with {run.Sublevels.Count} sublevels."
+                $"Generated run: {run.Sublevels.Count} sublevels, " +
+                $"{run.ProductsInCurrentRun.Count} products in run."
             );
 
-            for (
-                int i = 0;
-                i < run.Sublevels.Count;
-                i++
-            )
+            for (int i = 0; i < run.Sublevels.Count; i++)
             {
-                SublevelData sublevel =
-                    run.Sublevels[i];
-
+                SublevelData sublevel = run.Sublevels[i];
                 string products = "";
 
                 foreach (ProductData product in sublevel.Products)
@@ -40,9 +39,7 @@ namespace PinkTaxGame
                         $"{product.PricePLN:0.00} PLN | ";
                 }
 
-                Debug.Log(
-                    $"{i + 1}. {sublevel.ModeType}: {products}"
-                );
+                Debug.Log($"{i + 1}. {sublevel.ModeType}: {products}");
             }
         }
     }

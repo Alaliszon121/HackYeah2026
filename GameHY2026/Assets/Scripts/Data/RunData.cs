@@ -6,37 +6,23 @@ namespace PinkTaxGame
     [Serializable]
     public sealed class RunData
     {
-        private List<ProductData> productsInCurrentRun =
-            new List<ProductData>();
-
-        private List<SublevelData> sublevels =
-            new List<SublevelData>();
-
-        private List<ModeResult> results =
-            new List<ModeResult>();
+        private readonly List<ProductData> productsInCurrentRun;
+        private readonly List<SublevelData> sublevels;
+        private readonly List<ModeResult> results = new List<ModeResult>();
 
         private int currentSublevelIndex;
 
-        public IReadOnlyList<ProductData> ProductsInCurrentRun =>
-            productsInCurrentRun;
+        public IReadOnlyList<ProductData> ProductsInCurrentRun => productsInCurrentRun;
+        public IReadOnlyList<SublevelData> Sublevels => sublevels;
+        public IReadOnlyList<ModeResult> Results => results;
 
-        public IReadOnlyList<SublevelData> Sublevels =>
-            sublevels;
-
-        public IReadOnlyList<ModeResult> Results =>
-            results;
-
-        public int CurrentSublevelIndex =>
-            currentSublevelIndex;
+        public int CurrentSublevelIndex => currentSublevelIndex;
 
         public SublevelData CurrentSublevel
         {
             get
             {
-                if (currentSublevelIndex < 0)
-                    return null;
-
-                if (currentSublevelIndex >= sublevels.Count)
+                if (currentSublevelIndex < 0 || currentSublevelIndex >= sublevels.Count)
                     return null;
 
                 return sublevels[currentSublevelIndex];
@@ -76,43 +62,32 @@ namespace PinkTaxGame
                 if (MaximumPossiblePoints <= 0)
                     return 0f;
 
-                return (float)TotalPoints /
-                       MaximumPossiblePoints;
+                return (float)TotalPoints / MaximumPossiblePoints;
             }
         }
 
-        public RunData(
-            IEnumerable<ProductData> products,
-            IEnumerable<SublevelData> sublevels
-        )
+        public RunData(IEnumerable<ProductData> products, IEnumerable<SublevelData> sublevels)
         {
-            if (products != null)
-            {
-                productsInCurrentRun =
-                    new List<ProductData>(products);
-            }
+            productsInCurrentRun = products != null
+                ? new List<ProductData>(products)
+                : new List<ProductData>();
 
-            if (sublevels != null)
-            {
-                this.sublevels =
-                    new List<SublevelData>(sublevels);
-            }
+            this.sublevels = sublevels != null
+                ? new List<SublevelData>(sublevels)
+                : new List<SublevelData>();
 
             currentSublevelIndex = 0;
         }
 
         public void AddResult(ModeResult result)
         {
-            if (result == null)
-                return;
-
-            results.Add(result);
+            if (result != null)
+                results.Add(result);
         }
 
         public bool HasNextSublevel()
         {
-            return currentSublevelIndex + 1 <
-                   sublevels.Count;
+            return currentSublevelIndex + 1 < sublevels.Count;
         }
 
         public bool MoveToNextSublevel()
@@ -121,7 +96,6 @@ namespace PinkTaxGame
                 return false;
 
             currentSublevelIndex++;
-
             return true;
         }
     }

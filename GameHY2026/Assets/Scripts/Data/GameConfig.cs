@@ -13,10 +13,7 @@ namespace PinkTaxGame
         public int weight;
     }
 
-    [CreateAssetMenu(
-        fileName = "GameConfig",
-        menuName = "Pink Tax Game/Game Config"
-    )]
+    [CreateAssetMenu(fileName = "GameConfig", menuName = "Pink Tax Game/Game Config")]
     public sealed class GameConfig : ScriptableObject
     {
         [Header("Run")]
@@ -31,19 +28,11 @@ namespace PinkTaxGame
         [SerializeField] private int sortModeProductCount = 4;
 
         [Header("Mode Distribution")]
-        [SerializeField]
-        private List<ModeWeight> modeWeights = new List<ModeWeight>();
-
-        [Header("Scoring")]
-        [Min(1)]
-        [SerializeField] private int maxPointsPerSublevel = 100;
+        [SerializeField] private List<ModeWeight> modeWeights = new List<ModeWeight>();
 
         [Header("Stars")]
-        [Tooltip(
-            "Minimum total score percentage needed for 1, 2, 3, 4 and 5 stars."
-        )]
-        [SerializeField]
-        private float[] starThresholds =
+        [Tooltip("Minimum score percentage required for 1, 2, 3, 4 and 5 stars.")]
+        [SerializeField] private float[] starThresholds =
         {
             0.20f,
             0.40f,
@@ -54,13 +43,8 @@ namespace PinkTaxGame
 
         public int NumberOfSublevels => numberOfSublevels;
         public int ProductsPerRun => productsPerRun;
-
         public int SortModeProductCount => sortModeProductCount;
-
         public IReadOnlyList<ModeWeight> ModeWeights => modeWeights;
-
-        public int MaxPointsPerSublevel => maxPointsPerSublevel;
-
         public IReadOnlyList<float> StarThresholds => starThresholds;
     }
 }

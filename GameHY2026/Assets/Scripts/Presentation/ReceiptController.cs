@@ -6,14 +6,14 @@ namespace PinkTaxGame
     {
         [SerializeField] private GameObject receiptRoot;
 
-        public void ShowReceipt(RunData run) { }
-        public void GenerateResultEntries(RunData run) { }
-
-        public int CalculateStars(RunData run)
+        public void ShowReceipt(RunData run)
         {
-            return default;
+            // Step 7.
         }
 
-        public void HideReceipt() { }
+        public void HideReceipt()
+        {
+            // Step 7.
+        }
     }
 }

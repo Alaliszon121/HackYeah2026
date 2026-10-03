@@ -6,25 +6,18 @@ namespace PinkTaxGame
     [Serializable]
     public sealed class SublevelData
     {
-        private ModeType modeType;
-
-        private List<ProductData> products =
-            new List<ProductData>();
+        private readonly ModeType modeType;
+        private readonly List<ProductData> products;
 
         public ModeType ModeType => modeType;
+        public IReadOnlyList<ProductData> Products => products;
 
-        public IReadOnlyList<ProductData> Products =>
-            products;
-
-        public SublevelData(
-            ModeType modeType,
-            IEnumerable<ProductData> products
-        )
+        public SublevelData(ModeType modeType, IEnumerable<ProductData> products)
         {
             this.modeType = modeType;
-
-            if (products != null)
-                this.products = new List<ProductData>(products);
+            this.products = products != null
+                ? new List<ProductData>(products)
+                : new List<ProductData>();
         }
     }
 }

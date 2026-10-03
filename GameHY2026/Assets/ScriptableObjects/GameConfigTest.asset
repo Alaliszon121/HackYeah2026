@@ -13,15 +13,15 @@ MonoBehaviour:
   m_Name: GameConfigTest
   m_EditorClassIdentifier: Assembly-CSharp::PinkTaxGame.GameConfig
   numberOfSublevels: 6
-  productsPerRun: 4
+  productsPerRun: 12
   sortModeProductCount: 4
   modeWeights:
   - mode: 0
-    weight: 2
+    weight: 1
   - mode: 1
     weight: 2
   - mode: 2
-    weight: 2
+    weight: 3
   maxPointsPerSublevel: 100
   starThresholds:
   - 0.2

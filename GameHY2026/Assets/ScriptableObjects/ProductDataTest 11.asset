@@ -17,4 +17,4 @@ MonoBehaviour:
   priceGrosze: 456
   modelPrefab: {fileID: 919132149155446097, guid: 005b9ca1f83dacf40b153785d824b5b6, type: 3}
   icon: {fileID: -2413806693520163455, guid: f4bf12552ce81d649859a13ba2b1b2a1, type: 3}
-  comparisonGroup: D
+  comparisonGroup: none

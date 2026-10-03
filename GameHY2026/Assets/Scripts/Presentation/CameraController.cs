@@ -1,35 +1,29 @@
-using Unity.Cinemachine;
+using System;
 using UnityEngine;
-using UnityEngine.Splines;
 
 namespace PinkTaxGame
 {
     public class CameraController : MonoBehaviour
     {
-        [Header("Cinemachine 3")]
-        [SerializeField] private CinemachineCamera cinemachineCamera;
-        [SerializeField] private CinemachineSplineDolly splineDolly;
+        public void MoveToShelf(int shelfIndex, Action onComplete = null)
+        {
+            // Step 5:
+            // Move the camera to the requested shelf.
+            onComplete?.Invoke();
+        }
 
-        [Header("Unity Spline")]
-        [SerializeField] private SplineContainer shopSpline;
+        public void MoveToReceipt(Action onComplete = null)
+        {
+            // Step 5/7:
+            // Move the camera to the receipt.
+            onComplete?.Invoke();
+        }
 
-        [Header("Special Spline Positions")]
-        [Range(0f, 1f)]
-        [SerializeField] private float mainMenuSplinePosition;
-
-        [Range(0f, 1f)]
-        [SerializeField] private float receiptSplinePosition;
-
-        [Range(0f, 1f)]
-        [SerializeField] private float endCutsceneSplinePosition;
-
-        [Header("Transition")]
-        [SerializeField] private float moveDuration = 1f;
-
-        public void MoveToShelf(ShelfSpot shelf) { }
-        public void MoveToSplinePosition(float normalizedPosition, Transform lookTarget = null) { }
-        public void MoveToReceipt() { }
-        public void MoveToEndCutscene() { }
-        public void MoveToMainMenu() { }
+        public void MoveToEndCutscene(Action onComplete = null)
+        {
+            // Step 5/7:
+            // Move the camera to the end-cutscene position.
+            onComplete?.Invoke();
+        }
     }
 }

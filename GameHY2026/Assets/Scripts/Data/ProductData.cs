@@ -2,10 +2,7 @@ using UnityEngine;
 
 namespace PinkTaxGame
 {
-    [CreateAssetMenu(
-        fileName = "ProductData",
-        menuName = "Pink Tax Game/Product"
-    )]
+    [CreateAssetMenu(fileName = "ProductData", menuName = "Pink Tax Game/Product")]
     public sealed class ProductData : ScriptableObject
     {
         [Header("Identity")]
@@ -28,22 +25,15 @@ namespace PinkTaxGame
 
         public string ProductName => productName;
         public bool IsPink => isPink;
-
         public int PriceGrosze => priceGrosze;
-
         public float PricePLN => priceGrosze / 100f;
-
         public GameObject ModelPrefab => modelPrefab;
         public Sprite Icon => icon;
-
         public string ComparisonGroup => comparisonGroup;
 
         public bool IsComparableWith(ProductData other)
         {
-            if (other == null)
-                return false;
-
-            if (other == this)
+            if (other == null || other == this)
                 return false;
 
             if (string.IsNullOrWhiteSpace(comparisonGroup))

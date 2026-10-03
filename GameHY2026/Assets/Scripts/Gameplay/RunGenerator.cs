@@ -5,199 +5,117 @@ namespace PinkTaxGame
 {
     public class RunGenerator : MonoBehaviour
     {
-        [Header("Data")]
         [SerializeField] private ProductDatabase productDatabase;
         [SerializeField] private GameConfig gameConfig;
 
-
         public RunData GenerateRun()
         {
-            if (!CanGenerateRun())
-            {
-                Debug.LogError("RunGenerator: Cannot generate run with current configuration.");
+            if (!ValidateConfiguration())
                 return null;
-            }
 
             List<ModeType> modeSequence = GenerateModeSequence();
+            List<ProductData> runProducts = GenerateRunProducts(modeSequence);
 
-            List<ProductData> runProducts =
-                GenerateRunProducts(modeSequence);
+            if (runProducts == null)
+                return null;
 
-            List<SublevelData> sublevels =
-                GenerateSublevels(modeSequence, runProducts);
+            List<SublevelData> sublevels = GenerateSublevels(modeSequence, runProducts);
 
-            return new RunData(
-                runProducts,
-                sublevels
-            );
+            if (sublevels == null)
+                return null;
+
+            return new RunData(runProducts, sublevels);
         }
-
-
-        // -------------------------------------------------------
-        // MODE SEQUENCE
-        // -------------------------------------------------------
 
         private List<ModeType> GenerateModeSequence()
         {
             List<ModeType> sequence = new List<ModeType>();
 
-            // First guarantee one occurrence of every enabled mode.
+            foreach (ModeWeight modeWeight in gameConfig.ModeWeights)
+            {
+                if (modeWeight.weight > 0)
+                    sequence.Add(modeWeight.mode);
+            }
+
+            while (sequence.Count < gameConfig.NumberOfSublevels)
+                sequence.Add(ChooseWeightedMode());
+
+            Shuffle(sequence);
+            return sequence;
+        }
+
+        private ModeType ChooseWeightedMode()
+        {
+            int totalWeight = 0;
+
+            foreach (ModeWeight modeWeight in gameConfig.ModeWeights)
+            {
+                if (modeWeight.weight > 0)
+                    totalWeight += modeWeight.weight;
+            }
+
+            int randomValue = Random.Range(0, totalWeight);
+            int accumulatedWeight = 0;
+
             foreach (ModeWeight modeWeight in gameConfig.ModeWeights)
             {
                 if (modeWeight.weight <= 0)
                     continue;
 
-                if (sequence.Count >= gameConfig.NumberOfSublevels)
+                accumulatedWeight += modeWeight.weight;
+
+                if (randomValue < accumulatedWeight)
+                    return modeWeight.mode;
+            }
+
+            return ModeType.GuessPrice;
+        }
+
+        private List<ProductData> GenerateRunProducts(List<ModeType> modeSequence)
+        {
+            List<ProductData> availableProducts = GetUniqueDatabaseProducts();
+            List<ProductData> selectedProducts = new List<ProductData>();
+
+            if (modeSequence.Contains(ModeType.PriceDifference))
+            {
+                List<List<ProductData>> pairs = FindComparisonPairs(availableProducts);
+
+                if (pairs.Count == 0)
+                {
+                    Debug.LogError("RunGenerator: No valid comparison pair exists in ProductDatabase.");
+                    return null;
+                }
+
+                List<ProductData> pair = pairs[Random.Range(0, pairs.Count)];
+                selectedProducts.Add(pair[0]);
+                selectedProducts.Add(pair[1]);
+            }
+
+            Shuffle(availableProducts);
+
+            foreach (ProductData product in availableProducts)
+            {
+                if (selectedProducts.Count >= gameConfig.ProductsPerRun)
                     break;
 
-                sequence.Add(modeWeight.mode);
+                if (!selectedProducts.Contains(product))
+                    selectedProducts.Add(product);
             }
-
-            // Fill the remaining slots using weighted randomness.
-            while (sequence.Count < gameConfig.NumberOfSublevels)
-            {
-                sequence.Add(ChooseWeightedMode());
-            }
-
-            // Don't always put the guaranteed modes first.
-            Shuffle(sequence);
-
-            return sequence;
-        }
-
-
-        private ModeType ChooseWeightedMode()
-        {
-            IReadOnlyList<ModeWeight> weights =
-                gameConfig.ModeWeights;
-
-            int totalWeight = 0;
-
-            foreach (ModeWeight modeWeight in weights)
-            {
-                totalWeight += modeWeight.weight;
-            }
-
-            int randomValue = Random.Range(0, totalWeight);
-
-            int currentWeight = 0;
-
-            foreach (ModeWeight modeWeight in weights)
-            {
-                currentWeight += modeWeight.weight;
-
-                if (randomValue < currentWeight)
-                {
-                    return modeWeight.mode;
-                }
-            }
-
-            // Should normally never happen.
-            return weights[0].mode;
-        }
-
-
-        // -------------------------------------------------------
-        // RUN PRODUCTS
-        // -------------------------------------------------------
-
-        private List<ProductData> GenerateRunProducts(
-            List<ModeType> modeSequence
-        )
-        {
-            List<ProductData> selectedProducts =
-                new List<ProductData>();
-
-            bool needsComparisonPair =
-                modeSequence.Contains(ModeType.PriceDifference);
-
-            if (needsComparisonPair)
-            {
-                List<ProductData> pair =
-                    FindRandomComparisonPair();
-
-                foreach (ProductData product in pair)
-                {
-                    AddProductIfMissing(
-                        selectedProducts,
-                        product
-                    );
-                }
-            }
-
-            FillRemainingProducts(selectedProducts);
 
             Shuffle(selectedProducts);
-
             return selectedProducts;
         }
 
-
-        private void FillRemainingProducts(
-            List<ProductData> selectedProducts
-        )
-        {
-            List<ProductData> candidates =
-                new List<ProductData>(
-                    productDatabase.Products
-                );
-
-            Shuffle(candidates);
-
-            foreach (ProductData product in candidates)
-            {
-                if (
-                    selectedProducts.Count >=
-                    gameConfig.ProductsPerRun
-                )
-                {
-                    break;
-                }
-
-                AddProductIfMissing(
-                    selectedProducts,
-                    product
-                );
-            }
-        }
-
-
-        private void AddProductIfMissing(
-            List<ProductData> list,
-            ProductData product
-        )
-        {
-            if (product == null)
-                return;
-
-            if (list.Contains(product))
-                return;
-
-            list.Add(product);
-        }
-
-
-        // -------------------------------------------------------
-        // SUBLEVEL GENERATION
-        // -------------------------------------------------------
-
         private List<SublevelData> GenerateSublevels(
-    List<ModeType> modeSequence,
-    List<ProductData> runProducts
-)
+            List<ModeType> modeSequence,
+            List<ProductData> runProducts
+        )
         {
-            List<SublevelData> sublevels =
-                new List<SublevelData>();
+            List<SublevelData> sublevels = new List<SublevelData>();
 
-            HashSet<ProductData> usedGuessPriceProducts =
-                new HashSet<ProductData>();
-
-            HashSet<ProductData> usedPriceDifferenceProducts =
-                new HashSet<ProductData>();
-
-            HashSet<ProductData> usedSortProducts =
-                new HashSet<ProductData>();
-
+            HashSet<ProductData> usedGuessPrice = new HashSet<ProductData>();
+            HashSet<ProductData> usedPriceDifference = new HashSet<ProductData>();
+            HashSet<ProductData> usedSort = new HashSet<ProductData>();
 
             foreach (ModeType mode in modeSequence)
             {
@@ -206,466 +124,281 @@ namespace PinkTaxGame
                 switch (mode)
                 {
                     case ModeType.GuessPrice:
-                        products = GenerateGuessPriceProducts(
-                            runProducts,
-                            usedGuessPriceProducts
-                        );
+                        products = ChooseGuessPriceProducts(runProducts, usedGuessPrice);
                         break;
-
 
                     case ModeType.PriceDifference:
-                        products = GeneratePriceDifferenceProducts(
-                            runProducts,
-                            usedPriceDifferenceProducts
-                        );
+                        products = ChoosePriceDifferenceProducts(runProducts, usedPriceDifference);
                         break;
-
 
                     case ModeType.SortProducts:
-                        products = GenerateSortProducts(
-                            runProducts,
-                            usedSortProducts
-                        );
+                        products = ChooseSortProducts(runProducts, usedSort);
                         break;
-
 
                     default:
-                        Debug.LogError(
-                            $"Unsupported mode: {mode}"
-                        );
-
-                        products =
-                            new List<ProductData>();
-
-                        break;
+                        Debug.LogError($"RunGenerator: Unsupported mode {mode}.");
+                        return null;
                 }
 
+                if (products == null || products.Count == 0)
+                {
+                    Debug.LogError($"RunGenerator: Could not select products for {mode}.");
+                    return null;
+                }
 
                 foreach (ProductData product in products)
                 {
                     switch (mode)
                     {
                         case ModeType.GuessPrice:
-                            usedGuessPriceProducts.Add(product);
+                            usedGuessPrice.Add(product);
                             break;
 
                         case ModeType.PriceDifference:
-                            usedPriceDifferenceProducts.Add(product);
+                            usedPriceDifference.Add(product);
                             break;
 
                         case ModeType.SortProducts:
-                            usedSortProducts.Add(product);
+                            usedSort.Add(product);
                             break;
                     }
                 }
 
-
-                sublevels.Add(
-                    new SublevelData(
-                        mode,
-                        products
-                    )
-                );
+                sublevels.Add(new SublevelData(mode, products));
             }
 
             return sublevels;
         }
 
-
-        // -------------------------------------------------------
-        // GUESS PRICE
-        // -------------------------------------------------------
-
-        private List<ProductData> GenerateGuessPriceProducts(
-    List<ProductData> runProducts,
-    HashSet<ProductData> usedProducts
-)
+        private List<ProductData> ChooseGuessPriceProducts(
+            List<ProductData> runProducts,
+            HashSet<ProductData> usedProducts
+        )
         {
-            List<ProductData> unusedProducts =
-                new List<ProductData>();
+            List<ProductData> candidates = GetUnusedProducts(runProducts, usedProducts);
 
-            foreach (ProductData product in runProducts)
-            {
-                if (!usedProducts.Contains(product))
-                {
-                    unusedProducts.Add(product);
-                }
-            }
+            if (candidates.Count == 0)
+                candidates = new List<ProductData>(runProducts);
 
+            ProductData product = candidates[Random.Range(0, candidates.Count)];
 
-            // If everything has already appeared in this mode,
-            // repetition becomes allowed again.
-            List<ProductData> candidates =
-                unusedProducts.Count > 0
-                    ? unusedProducts
-                    : runProducts;
-
-
-            ProductData selectedProduct =
-                candidates[
-                    Random.Range(
-                        0,
-                        candidates.Count
-                    )
-                ];
-
-
-            return new List<ProductData>
-            {
-                selectedProduct
-            };
+            return new List<ProductData> { product };
         }
 
-
-        // -------------------------------------------------------
-        // PRICE DIFFERENCE
-        // -------------------------------------------------------
-
-        private List<ProductData> GeneratePriceDifferenceProducts(
-    List<ProductData> runProducts,
-    HashSet<ProductData> usedProducts
-)
+        private List<ProductData> ChoosePriceDifferenceProducts(
+            List<ProductData> runProducts,
+            HashSet<ProductData> usedProducts
+        )
         {
-            List<List<ProductData>> allPairs =
-                FindAllComparisonPairs(
-                    runProducts
-                );
-
+            List<List<ProductData>> allPairs = FindComparisonPairs(runProducts);
 
             if (allPairs.Count == 0)
-            {
-                Debug.LogError(
-                    "No valid comparison pair found in current run."
-                );
+                return null;
 
-                return new List<ProductData>();
-            }
-
-
-            List<List<ProductData>> unusedPairs =
-                new List<List<ProductData>>();
-
+            List<List<ProductData>> unusedPairs = new List<List<ProductData>>();
 
             foreach (List<ProductData> pair in allPairs)
             {
-                bool firstAlreadyUsed =
-                    usedProducts.Contains(pair[0]);
-
-                bool secondAlreadyUsed =
-                    usedProducts.Contains(pair[1]);
-
-
-                if (
-                    !firstAlreadyUsed &&
-                    !secondAlreadyUsed
-                )
-                {
+                if (!usedProducts.Contains(pair[0]) && !usedProducts.Contains(pair[1]))
                     unusedPairs.Add(pair);
+            }
+
+            List<List<ProductData>> candidates = unusedPairs.Count > 0 ? unusedPairs : allPairs;
+
+            return candidates[Random.Range(0, candidates.Count)];
+        }
+
+        private List<ProductData> ChooseSortProducts(
+            List<ProductData> runProducts,
+            HashSet<ProductData> usedProducts
+        )
+        {
+            List<ProductData> result = new List<ProductData>();
+            List<ProductData> unused = GetUnusedProducts(runProducts, usedProducts);
+
+            Shuffle(unused);
+
+            foreach (ProductData product in unused)
+            {
+                if (result.Count >= gameConfig.SortModeProductCount)
+                    break;
+
+                result.Add(product);
+            }
+
+            if (result.Count < gameConfig.SortModeProductCount)
+            {
+                List<ProductData> remaining = new List<ProductData>(runProducts);
+                Shuffle(remaining);
+
+                foreach (ProductData product in remaining)
+                {
+                    if (result.Count >= gameConfig.SortModeProductCount)
+                        break;
+
+                    if (!result.Contains(product))
+                        result.Add(product);
                 }
             }
 
-
-            // Prefer completely unused products.
-            // If none remain, allow repetition.
-            List<List<ProductData>> candidates =
-                unusedPairs.Count > 0
-                    ? unusedPairs
-                    : allPairs;
-
-
-            return candidates[
-                Random.Range(
-                    0,
-                    candidates.Count
-                )
-            ];
+            return result;
         }
 
-
-        private List<ProductData> FindRandomComparisonPair()
+        private List<ProductData> GetUniqueDatabaseProducts()
         {
-            List<ProductData> allProducts =
-                new List<ProductData>(
-                    productDatabase.Products
-                );
+            List<ProductData> result = new List<ProductData>();
 
-            List<List<ProductData>> validPairs =
-                FindAllComparisonPairs(
-                    allProducts
-                );
-
-            if (validPairs.Count == 0)
+            foreach (ProductData product in productDatabase.Products)
             {
-                Debug.LogError(
-                    "Product database contains no valid pink/normal comparison pairs."
-                );
-
-                return new List<ProductData>();
+                if (product != null && !result.Contains(product))
+                    result.Add(product);
             }
 
-            return validPairs[
-                Random.Range(
-                    0,
-                    validPairs.Count
-                )
-            ];
+            return result;
         }
 
-
-        private List<List<ProductData>> FindAllComparisonPairs(
-            List<ProductData> products
+        private List<ProductData> GetUnusedProducts(
+            List<ProductData> products,
+            HashSet<ProductData> usedProducts
         )
         {
-            List<List<ProductData>> pairs =
-                new List<List<ProductData>>();
+            List<ProductData> result = new List<ProductData>();
+
+            foreach (ProductData product in products)
+            {
+                if (!usedProducts.Contains(product))
+                    result.Add(product);
+            }
+
+            return result;
+        }
+
+        private List<List<ProductData>> FindComparisonPairs(IReadOnlyList<ProductData> products)
+        {
+            List<List<ProductData>> pairs = new List<List<ProductData>>();
 
             for (int i = 0; i < products.Count; i++)
             {
-                for (
-                    int j = i + 1;
-                    j < products.Count;
-                    j++
-                )
+                for (int j = i + 1; j < products.Count; j++)
                 {
-                    ProductData first =
-                        products[i];
+                    ProductData first = products[i];
+                    ProductData second = products[j];
 
-                    ProductData second =
-                        products[j];
-
-                    if (
-                        first == null ||
-                        second == null
-                    )
-                    {
+                    if (first == null || second == null)
                         continue;
-                    }
 
-                    if (
-                        !first.IsComparableWith(second)
-                    )
-                    {
+                    if (!first.IsComparableWith(second))
                         continue;
-                    }
 
-                    // For pink-tax comparisons we specifically
-                    // want one pink and one non-pink product.
-                    if (
-                        first.IsPink ==
-                        second.IsPink
-                    )
-                    {
+                    if (first.IsPink == second.IsPink)
                         continue;
-                    }
 
-                    pairs.Add(
-                        new List<ProductData>
-                        {
-                            first,
-                            second
-                        }
-                    );
+                    pairs.Add(new List<ProductData> { first, second });
                 }
             }
 
             return pairs;
         }
 
-
-        // -------------------------------------------------------
-        // SORT PRODUCTS
-        // -------------------------------------------------------
-
-        private List<ProductData> GenerateSortProducts(
-    List<ProductData> runProducts,
-    HashSet<ProductData> usedProducts
-)
+        private void Shuffle<T>(List<T> list)
         {
-            List<ProductData> selectedProducts =
-                new List<ProductData>();
-
-
-            List<ProductData> unusedProducts =
-                new List<ProductData>();
-
-            List<ProductData> alreadyUsedProducts =
-                new List<ProductData>();
-
-
-            foreach (ProductData product in runProducts)
+            for (int i = list.Count - 1; i > 0; i--)
             {
-                if (usedProducts.Contains(product))
-                {
-                    alreadyUsedProducts.Add(product);
-                }
-                else
-                {
-                    unusedProducts.Add(product);
-                }
+                int randomIndex = Random.Range(0, i + 1);
+                (list[i], list[randomIndex]) = (list[randomIndex], list[i]);
             }
-
-
-            Shuffle(unusedProducts);
-            Shuffle(alreadyUsedProducts);
-
-
-            int requiredCount =
-                gameConfig.SortModeProductCount;
-
-
-            // First use products that have never appeared
-            // in SortProducts before.
-            foreach (ProductData product in unusedProducts)
-            {
-                if (selectedProducts.Count >= requiredCount)
-                    break;
-
-                selectedProducts.Add(product);
-            }
-
-
-            // If there aren't enough unused products,
-            // fill the remaining slots with previous ones.
-            foreach (ProductData product in alreadyUsedProducts)
-            {
-                if (selectedProducts.Count >= requiredCount)
-                    break;
-
-                if (!selectedProducts.Contains(product))
-                {
-                    selectedProducts.Add(product);
-                }
-            }
-
-
-            return selectedProducts;
         }
 
-
-        // -------------------------------------------------------
-        // VALIDATION
-        // -------------------------------------------------------
-
-        private bool CanGenerateRun()
+        private bool ValidateConfiguration()
         {
             if (productDatabase == null)
             {
-                Debug.LogError(
-                    "RunGenerator: ProductDatabase is missing."
-                );
-
+                Debug.LogError("RunGenerator: ProductDatabase is not assigned.");
                 return false;
             }
 
             if (gameConfig == null)
             {
-                Debug.LogError(
-                    "RunGenerator: GameConfig is missing."
-                );
-
+                Debug.LogError("RunGenerator: GameConfig is not assigned.");
                 return false;
             }
 
-            if (
-                productDatabase.Products == null ||
-                productDatabase.Products.Count == 0
-            )
+            if (gameConfig.NumberOfSublevels <= 0)
             {
-                Debug.LogError(
-                    "RunGenerator: Product database is empty."
-                );
-
+                Debug.LogError("RunGenerator: NumberOfSublevels must be greater than zero.");
                 return false;
             }
 
-            if (
-                gameConfig.ProductsPerRun >
-                productDatabase.Products.Count
-            )
+            List<ProductData> products = GetUniqueDatabaseProducts();
+
+            if (products.Count == 0)
             {
-                Debug.LogError(
-                    "RunGenerator: ProductsPerRun is larger than the product database."
-                );
-
+                Debug.LogError("RunGenerator: ProductDatabase contains no valid products.");
                 return false;
             }
 
-            if (
-                gameConfig.SortModeProductCount >
-                gameConfig.ProductsPerRun
-            )
+            if (gameConfig.ProductsPerRun > products.Count)
             {
-                Debug.LogError(
-                    "RunGenerator: SortModeProductCount cannot be larger than ProductsPerRun."
-                );
-
+                Debug.LogError("RunGenerator: ProductsPerRun is larger than the number of available unique products.");
                 return false;
             }
 
-            if (
-                gameConfig.ModeWeights == null ||
-                gameConfig.ModeWeights.Count == 0
-            )
+            if (gameConfig.SortModeProductCount > gameConfig.ProductsPerRun)
             {
-                Debug.LogError(
-                    "RunGenerator: No mode weights configured."
-                );
-
+                Debug.LogError("RunGenerator: SortModeProductCount cannot be larger than ProductsPerRun.");
                 return false;
             }
 
+            HashSet<ModeType> seenModes = new HashSet<ModeType>();
+            int enabledModeCount = 0;
             int totalWeight = 0;
+            bool priceDifferenceEnabled = false;
 
-            foreach (
-                ModeWeight modeWeight
-                in gameConfig.ModeWeights
-            )
+            foreach (ModeWeight modeWeight in gameConfig.ModeWeights)
             {
-                totalWeight +=
-                    modeWeight.weight;
+                if (!seenModes.Add(modeWeight.mode))
+                {
+                    Debug.LogError($"RunGenerator: ModeWeights contains {modeWeight.mode} more than once.");
+                    return false;
+                }
+
+                if (modeWeight.weight <= 0)
+                    continue;
+
+                enabledModeCount++;
+                totalWeight += modeWeight.weight;
+
+                if (modeWeight.mode == ModeType.PriceDifference)
+                    priceDifferenceEnabled = true;
             }
 
             if (totalWeight <= 0)
             {
-                Debug.LogError(
-                    "RunGenerator: At least one mode must have a positive weight."
-                );
+                Debug.LogError("RunGenerator: At least one mode must have a positive weight.");
+                return false;
+            }
 
+            if (gameConfig.NumberOfSublevels < enabledModeCount)
+            {
+                Debug.LogError("RunGenerator: NumberOfSublevels must be at least the number of enabled modes.");
+                return false;
+            }
+
+            if (priceDifferenceEnabled && gameConfig.ProductsPerRun < 2)
+            {
+                Debug.LogError("RunGenerator: PriceDifference requires at least two products per run.");
+                return false;
+            }
+
+            if (priceDifferenceEnabled && FindComparisonPairs(products).Count == 0)
+            {
+                Debug.LogError(
+                    "RunGenerator: PriceDifference is enabled, but ProductDatabase contains no valid regular/pink comparison pair."
+                );
                 return false;
             }
 
             return true;
-        }
-
-
-        // -------------------------------------------------------
-        // HELPERS
-        // -------------------------------------------------------
-
-        private void Shuffle<T>(
-            List<T> list
-        )
-        {
-            for (
-                int i = list.Count - 1;
-                i > 0;
-                i--
-            )
-            {
-                int randomIndex =
-                    Random.Range(
-                        0,
-                        i + 1
-                    );
-
-                T temp = list[i];
-
-                list[i] =
-                    list[randomIndex];
-
-                list[randomIndex] =
-                    temp;
-            }
         }
     }
 }

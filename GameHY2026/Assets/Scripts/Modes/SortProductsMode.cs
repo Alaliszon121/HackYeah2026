@@ -1,26 +1,15 @@
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace PinkTaxGame
 {
     public class SortProductsMode : GameMode
     {
-        [SerializeField] private List<ProductData> displayedProducts = new List<ProductData>();
-        private List<ProductData> playerOrder = new List<ProductData>();
-
-        public void SetPlayerOrder(List<ProductData> orderedProducts) { }
-        public override void Setup(SublevelData sublevel) { }
-        public override void Play() { }
-        public override void Submit() { }
-
-        public override ModeResult CalculateResult()
+        public override void Play()
         {
-            return default;
+            // Step 5 on the mode branch.
         }
 
-        public override ModeResult GetResult()
+        public override void Submit()
         {
-            return default;
+            // Step 5 on the mode branch.
         }
     }
 }
