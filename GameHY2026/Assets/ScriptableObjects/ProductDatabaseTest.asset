@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ea9d1d8eaf7d374297834fed1661280, type: 3}
+  m_Name: ProductDatabaseTest
+  m_EditorClassIdentifier: Assembly-CSharp::PinkTaxGame.ProductDatabase
+  products:
+  - {fileID: 11400000, guid: 11097fa57c399c94bb1398b552a25c52, type: 2}
+  - {fileID: 11400000, guid: 021c9ea02a7ac904bac486361ebcd9fa, type: 2}
+  - {fileID: 11400000, guid: bfd0d836488bab441af17ab03c6272c6, type: 2}
+  - {fileID: 11400000, guid: 92bb89548d8e02e4bae368d5c1a92ac5, type: 2}
+  - {fileID: 11400000, guid: 5f5f4765a83512348be8901078410142, type: 2}
+  - {fileID: 11400000, guid: f8c99fb4b25af094cb6f9e257dfe568e, type: 2}
+  - {fileID: 11400000, guid: a14f37f1944ff7245b365378414fd98a, type: 2}
+  - {fileID: 11400000, guid: 371387d12bccd354ab58794ff2c5fa72, type: 2}
+  - {fileID: 11400000, guid: 32128503427734644b6d76ea1ac8b3bb, type: 2}
+  - {fileID: 11400000, guid: eb6a974826e89634681bdef0559e1d79, type: 2}
+  - {fileID: 11400000, guid: 37102739c39de1145a918cc86eb877e6, type: 2}
+  - {fileID: 11400000, guid: 1299d6a54403bc6458231080b161bc40, type: 2}
+  - {fileID: 11400000, guid: baae19dd1ac29f74083e1e9c9be6369d, type: 2}
+  - {fileID: 11400000, guid: 2f7c90af4486d444fb9351fcd4169477, type: 2}
+  - {fileID: 11400000, guid: 354d0b0f29e21d94093a5ce68eda0d0f, type: 2}
+  - {fileID: 11400000, guid: a99de67b69055994db58db29317febdd, type: 2}
+  - {fileID: 11400000, guid: 6e6ac10420a3a0e4089b1208a8670d6c, type: 2}
+  - {fileID: 11400000, guid: 7f1d77eb03809d84f8cc0d71fce6cb10, type: 2}

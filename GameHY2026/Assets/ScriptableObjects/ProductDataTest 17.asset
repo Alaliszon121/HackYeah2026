@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21a6cffa5aca56542a92d83e6f8cd2c8, type: 3}
+  m_Name: ProductDataTest 17
+  m_EditorClassIdentifier: Assembly-CSharp::PinkTaxGame.ProductData
+  productName: G
+  isPink: 0
+  priceGrosze: 789
+  modelPrefab: {fileID: 919132149155446097, guid: 005b9ca1f83dacf40b153785d824b5b6, type: 3}
+  icon: {fileID: -2413806693520163455, guid: f4bf12552ce81d649859a13ba2b1b2a1, type: 3}
+  comparisonGroup: G
