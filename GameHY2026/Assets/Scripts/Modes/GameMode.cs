@@ -8,6 +8,7 @@ namespace PinkTaxGame
         protected SublevelData currentSublevel;
         protected ShelfController shelfController;
         protected bool isCompleted;
+        protected ModeResult result = new ModeResult();
 
         public bool IsCompleted => isCompleted;
 
@@ -19,7 +20,7 @@ namespace PinkTaxGame
         public abstract void Setup(SublevelData sublevel);
         public abstract void Play();
         public abstract void Submit();
-        public abstract ModeResult CalculateResult();
+        public abstract void CalculateResult();
         public abstract ModeResult GetResult();
     }
 }

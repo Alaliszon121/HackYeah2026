@@ -233,16 +233,22 @@ namespace PinkTaxGame
             UpdatePlayerOrder();
         }
 
-        public override ModeResult CalculateResult()
+        public override void CalculateResult()
         {
+            Debug.Log("Calculating result");
+            result = new ModeResult();
             bool isCorrectlySorted = VerifySortingOrder();
-            ModeResult result = new ModeResult();
-            return result;
+            result.modeType = ModeType.SortProducts;
+            result.products = displayedProducts;
+            result.correctAnswer = isCorrectlySorted.ToString();
+            result.maxPoints = displayedProducts.Count;
+            result.points = displayedProducts.Count;
         }
 
         public override ModeResult GetResult()
         {
-            return CalculateResult();
+            CalculateResult();
+            return result;
         }
 
         public bool VerifySortingOrder()

@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 namespace PinkTaxGame
@@ -6,21 +7,32 @@ namespace PinkTaxGame
     {
         [SerializeField] private ProductData firstProduct;
         [SerializeField] private ProductData secondProduct;
-        private float playerGuessedDifference;
-
-        public void SetPlayerGuessedDifference(float difference) { }
+        [SerializeField] private TMP_InputField playerInputZloty;
+        [SerializeField] private TMP_InputField playerInputGrosze;
+        
+        private int playerGuessedDifference;
+        private ModeResult currentResult;
+        
         public override void Setup(SublevelData sublevel) { }
         public override void Play() { }
-        public override void Submit() { }
 
-        public override ModeResult CalculateResult()
-        {
-            return default;
+        public override void Submit() {
+            CalculateResult();
+        }
+
+        public override void CalculateResult() {
+            result = new ModeResult();
+            result.modeType = ModeType.PriceDifference;
+            
+            playerGuessedDifference = int.Parse(playerInputZloty.text) * 100 + int.Parse(playerInputGrosze.text);
+            result.correctAnswer = Mathf.Abs(secondProduct.pricePLN - firstProduct.pricePLN).ToString();
+            result.playerAnswer = playerGuessedDifference.ToString();
         }
 
         public override ModeResult GetResult()
         {
-            return default;
+            CalculateResult();
+            return result;
         }
     }
 }
