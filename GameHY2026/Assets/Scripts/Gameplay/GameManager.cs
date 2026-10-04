@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace PinkTaxGame
 {
@@ -237,6 +238,7 @@ namespace PinkTaxGame
             // Next step:
             // Trigger the end cutscene here.
             // After the cutscene, reset/reload back to the main menu.
+            SceneManager.LoadScene(1);
         }
 
         private GameMode GetMode(ModeType modeType)

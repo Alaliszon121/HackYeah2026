@@ -21,7 +21,7 @@ namespace PinkTaxGame
 
         public int ShelfCount => shelves.Count;
         public float ShelfSpacing => shelfSpacing;
-        public float ShelfWidth => shelfSpacing * 0.6f;
+        public float ShelfWidth => shelfSpacing * 0.5f;
         public Vector3 ProductRowLocalOffset => productRowLocalOffset;
 
         public bool CreateShelves(int count)
@@ -134,13 +134,18 @@ namespace PinkTaxGame
                 Pose pose = productPoses[i];
 
                 GameObject productObject = Instantiate(
-                    product.ModelPrefab,
-                    pose.position,
-                    pose.rotation,
-                    shelf.transform
-                );
+    product.ModelPrefab,
+    pose.position,
+    pose.rotation,
+    shelf.transform
+);
 
-                productObject.name = $"{product.ProductName}_Shelf_{shelfIndex}_Product_{i}";
+                productObject.name =
+                    $"{product.ProductName}_Shelf_{shelfIndex}_Product_{i}";
+
+                if (productObject.GetComponent<ProductIdleMotion>() == null)
+                    productObject.AddComponent<ProductIdleMotion>();
+
                 spawnedProducts[shelfIndex].Add(productObject);
             }
 
