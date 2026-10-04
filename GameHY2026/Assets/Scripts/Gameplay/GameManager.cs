@@ -13,6 +13,7 @@ namespace PinkTaxGame
         [SerializeField] private RunGenerator runGenerator;
         [SerializeField] private ShelfController shelfController;
         [SerializeField] private CameraController cameraController;
+        [SerializeField] private ReceiptController receiptController;
 
         private RunData currentRun;
         private GameMode currentMode;
@@ -43,6 +44,12 @@ namespace PinkTaxGame
 
             if (cameraController == null)
                 cameraController = FindAnyObjectByType<CameraController>();
+
+            if (receiptController == null)
+                receiptController = GetComponent<ReceiptController>();
+
+            if (receiptController == null)
+                receiptController = FindAnyObjectByType<ReceiptController>();
         }
 
         private void GetModes()
@@ -67,6 +74,7 @@ namespace PinkTaxGame
             acceptingResult = false;
 
             ResolveSceneReferences();
+            receiptController?.HideReceipt();
 
             if (runGenerator == null)
             {
@@ -144,7 +152,9 @@ namespace PinkTaxGame
 
                 if (currentProducts == null)
                 {
-                    Debug.LogError($"GameManager: Shelf {shelfIndex} has no spawned product list.");
+                    Debug.LogError(
+                        $"GameManager: Shelf {shelfIndex} has no spawned product list."
+                    );
                     return;
                 }
 
@@ -193,19 +203,40 @@ namespace PinkTaxGame
             currentMode?.Stop();
             currentMode = null;
 
-            Debug.Log(
-                $"GameManager: Run finished with {currentRun?.Results.Count ?? 0} results. " +
-                $"Score: {currentRun?.TotalPoints ?? 0}/{currentRun?.MaximumPossiblePoints ?? 0}."
-            );
+            if (currentRun == null)
+            {
+                Debug.LogError("GameManager: Cannot show receipt without an active run.");
+                return;
+            }
 
-            // Next step:
-            // ReceiptController.ShowReceipt(currentRun);
+            if (receiptController == null)
+            {
+                ResolveSceneReferences();
+
+                if (receiptController == null)
+                {
+                    Debug.LogError(
+                        "GameManager: No ReceiptController exists in the scene."
+                    );
+                    return;
+                }
+            }
+
+            receiptController.ShowReceipt(
+                currentRun,
+                runGenerator != null ? runGenerator.Config : null
+            );
         }
 
         public void GoToEndCutscene()
         {
-            // Later:
-            // Start end cutscene and reset back to the menu.
+            receiptController?.HideReceipt();
+
+            Debug.Log("GameManager: End cutscene requested.");
+
+            // Next step:
+            // Trigger the end cutscene here.
+            // After the cutscene, reset/reload back to the main menu.
         }
 
         private GameMode GetMode(ModeType modeType)
@@ -222,7 +253,9 @@ namespace PinkTaxGame
                     return sortProductsMode;
 
                 default:
-                    Debug.LogError($"GameManager: Unsupported mode {modeType}.");
+                    Debug.LogError(
+                        $"GameManager: Unsupported mode {modeType}."
+                    );
                     return null;
             }
         }

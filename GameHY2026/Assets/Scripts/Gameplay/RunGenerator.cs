@@ -8,6 +8,8 @@ namespace PinkTaxGame
         [SerializeField] private ProductDatabase productDatabase;
         [SerializeField] private GameConfig gameConfig;
 
+        public GameConfig Config => gameConfig;
+
         public RunData GenerateRun()
         {
             if (!ValidateConfiguration())
