@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21a6cffa5aca56542a92d83e6f8cd2c8, type: 3}
   m_Name: 13DlugopisD
   m_EditorClassIdentifier: Assembly-CSharp::PinkTaxGame.ProductData
-  productName: "D\u0142ugopis dla dzieci z jednoro\u017Ccem"
+  productName: "D\u0142ugopis z jednoro\u017Ccem"
   isPink: 1
   priceGrosze: 1599
   modelPrefab: {fileID: 919132149155446097, guid: b123f1df9b0d46c4690d4f27712d13bd, type: 3}

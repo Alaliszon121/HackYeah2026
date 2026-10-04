@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21a6cffa5aca56542a92d83e6f8cd2c8, type: 3}
   m_Name: 4PerfumyM
   m_EditorClassIdentifier: Assembly-CSharp::PinkTaxGame.ProductData
-  productName: "Perfumy m\u0119skie marki premium"
+  productName: "Premium perfumy m\u0119skie"
   isPink: 0
   priceGrosze: 52500
   modelPrefab: {fileID: 919132149155446097, guid: e4fb3c6666a2b75438a608bb9459b8c2, type: 3}
