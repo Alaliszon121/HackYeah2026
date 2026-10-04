@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21a6cffa5aca56542a92d83e6f8cd2c8, type: 3}
   m_Name: 6MyszkaM
   m_EditorClassIdentifier: Assembly-CSharp::PinkTaxGame.ProductData
-  productName: "Bia\u0142a myszka komputerowa"
+  productName: Czarna myszka komputerowa
   isPink: 0
   priceGrosze: 34999
-  modelPrefab: {fileID: 0}
-  icon: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: 23250a12107435849bcb34824c5ca9e6, type: 3}
+  icon: {fileID: 21300000, guid: 9bb68a2f3cd93ba43a2bd644f2518bdc, type: 3}
   comparisonGroup: A

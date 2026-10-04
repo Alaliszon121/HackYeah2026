@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: "Czarne s\u0142uchawki"
   isPink: 0
   priceGrosze: 5499
-  modelPrefab: {fileID: 0}
-  icon: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: 7cc30132ca387c04ebfc903548313f66, type: 3}
+  icon: {fileID: 21300000, guid: 529e8432203659f4d9aa85de636342b2, type: 3}
   comparisonGroup: A

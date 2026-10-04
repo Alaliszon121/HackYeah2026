@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: "R\xF3\u017Cowa myszka komputerowa"
   isPink: 1
   priceGrosze: 37999
-  modelPrefab: {fileID: 0}
-  icon: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: b5d56f40de96ebd44bee3b6ce19e84bd, type: 3}
+  icon: {fileID: 21300000, guid: e35d267750fa250488b04869c812702f, type: 3}
   comparisonGroup: A
