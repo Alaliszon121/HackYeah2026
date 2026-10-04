@@ -816,7 +816,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Poprawna:'
+  m_text: 'Twoja:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 139c4e5c27c960c4aab8351339a0cc47, type: 2}
   m_sharedMaterial: {fileID: 8508449305776650456, guid: 139c4e5c27c960c4aab8351339a0cc47, type: 2}
@@ -953,7 +953,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Poprawne:'
+  m_text: 'Twoje: '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 139c4e5c27c960c4aab8351339a0cc47, type: 2}
   m_sharedMaterial: {fileID: 8508449305776650456, guid: 139c4e5c27c960c4aab8351339a0cc47, type: 2}
