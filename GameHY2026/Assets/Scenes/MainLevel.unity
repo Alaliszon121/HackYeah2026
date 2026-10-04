@@ -24,7 +24,7 @@ RenderSettings:
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
-  m_AmbientMode: 0
+  m_AmbientMode: 4
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 0}
   m_HaloStrength: 0.5
@@ -511,6 +511,8 @@ MonoBehaviour:
   - {fileID: 5329096697303794643, guid: 58ef040d4d65f9540bfbc7d0fa00485b, type: 3}
   - {fileID: 9108014657130703599, guid: 2eb6cc84b34074e4bac6a6465c569fec, type: 3}
   - {fileID: 5922103333369382057, guid: 7dea27e653cfbb94aa6f2124d0152fcb, type: 3}
+  - {fileID: 277886483456891109, guid: 956dfc41196217a45be94484531a6f89, type: 3}
+  - {fileID: 3042771286075748797, guid: 951750b019e54114695058d863b2d19e, type: 3}
   shelfSpacing: 4
   productRowLocalOffset: {x: 0, y: 1.1, z: 0}
 --- !u!4 &74149523
