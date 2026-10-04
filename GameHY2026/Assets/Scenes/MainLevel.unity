@@ -5933,7 +5933,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1103394092}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 396350441}
+        m_TargetAssemblyTypeName: PinkTaxGame.GameManager, Assembly-CSharp
+        m_MethodName: GoToEndCutscene
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1103394092
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10211,7 +10223,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: Continue
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6ef6fc4d51fef41418bed914cd863438, type: 2}
   m_sharedMaterial: {fileID: 8508449305776650456, guid: 6ef6fc4d51fef41418bed914cd863438, type: 2}
