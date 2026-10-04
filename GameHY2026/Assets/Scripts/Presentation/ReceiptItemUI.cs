@@ -20,8 +20,16 @@ namespace PinkTaxGame
 
             if (productIcon != null)
             {
+                // Force clear first to flush any dirty UI canvas batching state
+                productIcon.sprite = null;
+                productIcon.enabled = false;
+
+                // Reassign
                 productIcon.sprite = product.Icon;
                 productIcon.enabled = product.Icon != null;
+        
+                // Force the canvas renderer to update geometry
+                productIcon.SetAllDirty();
             }
 
             if (productNameText != null)
@@ -29,6 +37,15 @@ namespace PinkTaxGame
 
             if (priceText != null)
                 priceText.text = FormatPrice(product.PriceGrosze);
+        }
+        
+        private void Update()
+        {
+            Debug.Log("ProductIcon : " + productIcon.sprite);
+            if (productIcon != null && productIcon.sprite == null)
+            {
+                Debug.LogWarning($"Sprite was cleared on {gameObject.name}!", this);
+            }
         }
 
         private string FormatPrice(int grosze)
