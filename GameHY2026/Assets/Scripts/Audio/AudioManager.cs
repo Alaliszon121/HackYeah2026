@@ -9,6 +9,7 @@ public class AudioManager : MonoBehaviour {
     [Header("Audio Sources & Mixers")]
     [SerializeField] private AudioMixer mainAudioMixer;
     [SerializeField] private AudioSource musicAudioSource;
+    [SerializeField] private AudioSource ambientAudioSource;
     [SerializeField] private AudioSource sfxAudioSource; 
     
     [Header("Common Sound Effects")]
