@@ -124,8 +124,8 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 0.7
   tint:
-    m_OverrideState: 0
-    m_Value: {r: 1, g: 1, b: 1, a: 1}
+    m_OverrideState: 1
+    m_Value: {r: 0.9924528, g: 0.73965824, b: 0.92001355, a: 1}
   dirtTexture:
     m_OverrideState: 0
     m_Value: {fileID: 0}
@@ -284,8 +284,8 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 1
   tintColor:
-    m_OverrideState: 0
-    m_Value: {r: 1, g: 1, b: 1, a: 1}
+    m_OverrideState: 1
+    m_Value: {r: 1, g: 0.9415095, b: 0.97501993, a: 1}
   bloomMip:
     m_OverrideState: 0
     m_Value: 1
