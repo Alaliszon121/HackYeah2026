@@ -6,8 +6,8 @@ AudioContainerElement:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: TMP_Button_Click_{-7439812665714674898}
-  m_AudioClip: {fileID: 8300000, guid: 6a2261d04a03cfe4ebbc327c129f32fe, type: 3}
+  m_Name: 618187__theplax__mouse-click-4_{-7439812665714674898}
+  m_AudioClip: {fileID: 8300000, guid: e5f7e0fd7b7906044a4fc3d2992b10b7, type: 3}
   m_Volume: 0
   m_Enabled: 1
 --- !u!1307931743 &6418180475301049370
@@ -22,17 +22,17 @@ AudioRandomContainer:
   m_AutomaticTriggerTime: 0
   m_LoopCount: 1
   m_VolumeRandomizationRange: {x: 0, y: 0}
-  m_PitchRandomizationRange: {x: -343.29895, y: 312.37122}
+  m_PitchRandomizationRange: {x: -100, y: 20}
   m_AutomaticTriggerTimeRandomizationRange: {x: 0, y: 0}
   m_LoopCountRandomizationRange: {x: 0, y: 0}
   m_Elements:
   - {fileID: -7439812665714674898}
   m_AvoidRepeatingLast: 0
-  m_PlaybackMode: 0
+  m_PlaybackMode: 2
   m_TriggerMode: 1
   m_AutomaticTriggerMode: 1
   m_LoopMode: 2
-  m_VolumeRandomizationEnabled: 1
+  m_VolumeRandomizationEnabled: 0
   m_PitchRandomizationEnabled: 1
   m_AutomaticTriggerTimeRandomizationEnabled: 0
   m_LoopCountRandomizationEnabled: 0
