@@ -16,5 +16,5 @@ MonoBehaviour:
   isPink: 1
   priceGrosze: 1949
   modelPrefab: {fileID: 919132149155446097, guid: e5718a0385030954298c2ccc25df10ac, type: 3}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 32b143d4c03a2f740bf34fa60dff68a9, type: 3}
   comparisonGroup: A

@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: "Skarpetki dziewcz\u0119ce 3 pary"
   isPink: 1
   priceGrosze: 2590
-  modelPrefab: {fileID: 0}
-  icon: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: d03d79d34c19a6a47906d8415596ba64, type: 3}
+  icon: {fileID: 21300000, guid: b4067864738e9454d9d096bff2d3a15d, type: 3}
   comparisonGroup: A

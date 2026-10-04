@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: "Rajstopy ch\u0142opi\u0119ce"
   isPink: 0
   priceGrosze: 1200
-  modelPrefab: {fileID: 0}
-  icon: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: 5a201ab27dff06740a8d7f119c4d5b39, type: 3}
+  icon: {fileID: 21300000, guid: 6a26ffc4243324a488b1f597f4d0464e, type: 3}
   comparisonGroup: A

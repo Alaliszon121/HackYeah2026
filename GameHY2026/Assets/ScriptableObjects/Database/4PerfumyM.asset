@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: "Perfumy m\u0119skie marki premium"
   isPink: 0
   priceGrosze: 52500
-  modelPrefab: {fileID: 0}
-  icon: {fileID: 0}
-  comparisonGroup: 
+  modelPrefab: {fileID: 919132149155446097, guid: e4fb3c6666a2b75438a608bb9459b8c2, type: 3}
+  icon: {fileID: 21300000, guid: 7b870e81dd17ffc45813ab2a2ca05b06, type: 3}
+  comparisonGroup: A

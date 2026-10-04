@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: "Skarpetki ch\u0142opi\u0119ce 3 pary"
   isPink: 0
   priceGrosze: 2590
-  modelPrefab: {fileID: 0}
-  icon: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: 1dca00c4c80436949b75304e47f51942, type: 3}
+  icon: {fileID: 21300000, guid: 2618d16ec9002984c94134df263af1a0, type: 3}
   comparisonGroup: A

@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: "R\xF3\u017Cowe s\u0142uchawki"
   isPink: 1
   priceGrosze: 5899
-  modelPrefab: {fileID: 0}
-  icon: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: e3d8388c03d5f6e42aa02347c60ef2ef, type: 3}
+  icon: {fileID: 21300000, guid: f82fe81064cdf5a42ab61b42a548a166, type: 3}
   comparisonGroup: A
