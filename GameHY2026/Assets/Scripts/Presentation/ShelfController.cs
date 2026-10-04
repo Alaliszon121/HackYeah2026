@@ -21,7 +21,7 @@ namespace PinkTaxGame
 
         public int ShelfCount => shelves.Count;
         public float ShelfSpacing => shelfSpacing;
-        public float ShelfWidth => shelfSpacing * 0.75f;
+        public float ShelfWidth => shelfSpacing * 0.6f;
         public Vector3 ProductRowLocalOffset => productRowLocalOffset;
 
         public bool CreateShelves(int count)
