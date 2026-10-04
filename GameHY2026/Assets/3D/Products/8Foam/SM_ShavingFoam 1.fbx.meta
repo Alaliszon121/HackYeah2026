@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 66694ee737713a944bfaef434f762c42
+guid: 0f61317dd6e9bb8489472e6c5d8fe31f
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -7,8 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: M_Shelf
-    second: {fileID: 2100000, guid: c0e7df7a04b376b4b80f471cda1098df, type: 2}
+      name: M_ShavingFoam
+    second: {fileID: 2100000, guid: 6fd2f08c646efdb4a835863bc3abba4a, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
