@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: "Bokserki m\u0119skie"
   isPink: 0
   priceGrosze: 1600
-  modelPrefab: {fileID: 0}
-  icon: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: b384ed74a3c16694281949308512d58b, type: 3}
+  icon: {fileID: 21300000, guid: 99387a349f6d638448f2b4e6fc4b1fa3, type: 3}
   comparisonGroup: A

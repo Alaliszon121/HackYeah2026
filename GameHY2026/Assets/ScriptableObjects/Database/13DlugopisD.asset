@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: "D\u0142ugopis dla dzieci z jednoro\u017Ccem"
   isPink: 1
   priceGrosze: 1599
-  modelPrefab: {fileID: 0}
-  icon: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: b123f1df9b0d46c4690d4f27712d13bd, type: 3}
+  icon: {fileID: 21300000, guid: ac3427c525b2dda42830e2f1e8a1f289, type: 3}
   comparisonGroup: A

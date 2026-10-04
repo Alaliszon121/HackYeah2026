@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: Bokserki damskie
   isPink: 1
   priceGrosze: 2000
-  modelPrefab: {fileID: 0}
-  icon: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: 950458893d0f4074991423b4ecd339bb, type: 3}
+  icon: {fileID: 21300000, guid: 6901d8fdbdec7a542bac572a5da6fe4c, type: 3}
   comparisonGroup: A

@@ -15,6 +15,6 @@ MonoBehaviour:
   productName: "D\u0142ugopis dla dzieci z dinozaurem"
   isPink: 0
   priceGrosze: 899
-  modelPrefab: {fileID: 0}
-  icon: {fileID: 0}
+  modelPrefab: {fileID: 919132149155446097, guid: 2617dab6c79bd7a43a3fa80ffeb4a6ef, type: 3}
+  icon: {fileID: 21300000, guid: 1652717b34cabda46a6f078a1916bb56, type: 3}
   comparisonGroup: A
