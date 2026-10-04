@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 66694ee737713a944bfaef434f762c42
+guid: f55b264f04eda5f4da2bef58f49d7def
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -7,8 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: M_Shelf
-    second: {fileID: 2100000, guid: c0e7df7a04b376b4b80f471cda1098df, type: 2}
+      name: M_ShowerGel
+    second: {fileID: 2100000, guid: 73a7e973fac4a1541b55792a65b85473, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
