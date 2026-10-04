@@ -462,6 +462,10 @@ namespace PinkTaxGame
                     draggedItem.OriginalPositionIndex
                 );
             }
+            
+            // Play drag sound when the user picks up the item
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlayItemDrag();
         }
 
         private void HandleDrag()
@@ -514,6 +518,10 @@ namespace PinkTaxGame
             {
                 ReturnDraggedItemToOriginalPosition();
 
+                // Play drop sound for an invalid drop (snap back)
+                if (AudioManager.Instance != null)
+                    AudioManager.Instance.PlayItemDrop();
+
                 draggedItem = null;
                 UpdatePlayerOrder();
                 return;
@@ -553,6 +561,10 @@ namespace PinkTaxGame
 
             positionOccupants[targetPositionIndex] =
                 draggedItem;
+
+            // Play drop sound for a valid drop
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlayItemDrop();
 
             draggedItem = null;
 
