@@ -268,6 +268,23 @@ PinkTaxGame
 
 ---
 
+## AI Usage & Asset Credits
+
+| Area | Usage |
+| --- | --- |
+| 3D models | Created entirely by our team. **No AI was used.** |
+| Animations | Created entirely by our team. **No AI was used.** |
+| Store ambient audio | Recorded by our team in a shopping mall. |
+| Other sound effects | Third-party assets released under **CC0**. |
+| Programming | Written by the team with AI assistance during parts of the coding process. The codebase is **not AI-generated as a whole**. |
+| Scene setup & technical integration | Done manually by the team, including connecting systems, creating and placing objects, configuring scenes, and other non-coding technical work. |
+| Game design, research & in-game writing | Created by the team without AI generation. |
+| This README | Mostly written and edited with AI assistance based on information provided by the team. |
+
+AI tools were used as assistants during development, primarily for parts of the programming process and for preparing this README. All creative decisions, game design, research, visual assets, animations, scene construction, integration, and final implementation decisions were made by the team.
+
+---
+
 ## Team
 
 ### SO BAM!
