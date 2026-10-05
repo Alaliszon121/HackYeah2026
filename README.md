@@ -190,6 +190,8 @@ If a player finishes the game and becomes slightly more suspicious of two nearly
 
 ## Running the Project
 
+We did not include .exe in our repository, so if you want to play visit out itch.io page: [https://viwien.itch.io/bez-roznicy](https://viwien.itch.io/bez-roznicy)
+
 ### 1. Clone the repository
 
 ```bash
