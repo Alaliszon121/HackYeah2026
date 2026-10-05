@@ -191,45 +191,7 @@ If a player finishes the game and becomes slightly more suspicious of two nearly
 ## Running the Project
 
 We did not include .exe in our repository, so if you want to play visit out itch.io page: [https://viwien.itch.io/bez-roznicy](https://viwien.itch.io/bez-roznicy)
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/Alaliszon121/HackYeah2026.git
-cd HackYeah2026
-```
-
-### 2. Open Unity Hub
-
-Choose:
-
-```text
-Add > Add project from disk
-```
-
-and select:
-
-```text
-HackYeah2026/GameHY2026
-```
-
-### 3. Open the project using
-
-```text
-Unity 6000.3.16f1
-```
-
-Let Unity import everything. Make coffee, question your life choices, wait for shaders, and consider making another coffee.
-
-### 4. Open the main scene
-
-```text
-Assets/Scenes/MainLevel.unity
-```
-
-### 5. Press Play
-
-Congratulations.
+This repo is a temporary light version to fit in 150MB reqirement of AI analysis and scoring.
 
 ---
 
